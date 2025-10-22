@@ -1,61 +1,115 @@
-"use client";
-
 import * as React from "react";
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+  Modal,
+  LayoutRectangle,
+} from "react-native";
 
-import { cn } from "./utils";
+interface TooltipProps {
+  children: React.ReactNode;
+  content: string;
+  side?: "top" | "bottom" | "left" | "right";
+}
 
-function TooltipProvider({
-  delayDuration = 0,
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
+interface TooltipContextValue {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  triggerLayout: LayoutRectangle | null;
+  setTriggerLayout: (layout: LayoutRectangle | null) => void;
+  content: string;
+  side: "top" | "bottom" | "left" | "right";
+}
+
+const TooltipContext = React.createContext<TooltipContextValue>({
+  open: false,
+  setOpen: () => {},
+  triggerLayout: null,
+  setTriggerLayout: () => {},
+  content: "",
+  side: "top",
+});
+
+const TooltipProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <>{children}</>;
+};
+
+const Tooltip: React.FC<TooltipProps> = ({ children, content, side = "top" }) => {
+  const [open, setOpen] = React.useState(false);
+  const [triggerLayout, setTriggerLayout] = React.useState<LayoutRectangle | null>(null);
+
   return (
-    <TooltipPrimitive.Provider
-      data-slot="tooltip-provider"
-      delayDuration={delayDuration}
-      {...props}
-    />
+    <TooltipContext.Provider
+      value={{ open, setOpen, triggerLayout, setTriggerLayout, content, side }}
+    >
+      {children}
+    </TooltipContext.Provider>
   );
-}
+};
 
-function Tooltip({
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Root>) {
-  return (
-    <TooltipProvider>
-      <TooltipPrimitive.Root data-slot="tooltip" {...props} />
-    </TooltipProvider>
-  );
-}
-
-function TooltipTrigger({
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
-}
-
-function TooltipContent({
-  className,
-  sideOffset = 0,
+const TooltipTrigger: React.FC<{ children: React.ReactElement; asChild?: boolean }> = ({
   children,
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Content>) {
-  return (
-    <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Content
-        data-slot="tooltip-content"
-        sideOffset={sideOffset}
-        className={cn(
-          "bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-fit origin-(--radix-tooltip-content-transform-origin) rounded-md px-3 py-1.5 text-xs text-balance",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-        <TooltipPrimitive.Arrow className="bg-primary fill-primary z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px]" />
-      </TooltipPrimitive.Content>
-    </TooltipPrimitive.Portal>
-  );
-}
+}) => {
+  const { setOpen, setTriggerLayout } = React.useContext(TooltipContext);
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+  return React.cloneElement(children, {
+    onPress: () => setOpen(true),
+    onLayout: (event: any) => {
+      const layout = event.nativeEvent.layout;
+      setTriggerLayout(layout);
+    },
+  } as any);
+};
+
+const TooltipContent = React.forwardRef<View, { style?: ViewStyle; textStyle?: TextStyle }>(
+  ({ style, textStyle }, ref) => {
+    const { open, setOpen, content } = React.useContext(TooltipContext);
+
+    if (!open) return null;
+
+    return (
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <TouchableOpacity
+          style={styles.overlay}
+          activeOpacity={1}
+          onPress={() => setOpen(false)}
+        >
+          <View ref={ref} style={[styles.content, style]}>
+            <Text style={[styles.text, textStyle]}>{content}</Text>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  }
+);
+
+TooltipContent.displayName = "TooltipContent";
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  content: {
+    backgroundColor: '#1f2937',
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    maxWidth: 250,
+  },
+  text: {
+    color: '#ffffff',
+    fontSize: 12,
+    lineHeight: 16,
+  },
+});
+
+export { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent };
+
+

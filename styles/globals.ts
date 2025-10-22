@@ -1,233 +1,197 @@
-/* @custom-variant removed: unknown at-rule; define a dark variant in Tailwind/PostCSS config instead */
-
-const styles = `:root {
-  --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: transparent;
-  --input-background: #f3f3f5;
-  --switch-background: #cbced4;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: rgb(3, 2, 19);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
-}
-
-:root {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-switch-background: var(--switch-background);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-}
-
-.dark {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-switch-background: var(--switch-background);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-}
-
-@layer base {
-  * {
-    border-color: var(--color-border);
-    outline-color: var(--color-ring);
-  }
-  body {
-    background: var(--color-background);
-    color: var(--color-foreground);
-  }
-}
-
 /**
- * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ * React Native Global Theme Constants
+ * Converted from web CSS variables to React Native TypeScript theme objects
+ * 
+ * These theme constants can be used throughout the app for consistent styling
  */
-@layer base {
-  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
-    h1 {
-      font-size: var(--text-2xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
 
-    h2 {
-      font-size: var(--text-xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+// Font constants
+export const fonts = {
+  size: {
+    xs: 12,
+    sm: 14,
+    base: 16,
+    lg: 18,
+    xl: 20,
+    '2xl': 24,
+    '3xl': 30,
+    '4xl': 36,
+  },
+  weight: {
+    normal: '400' as const,
+    medium: '500' as const,
+    semibold: '600' as const,
+    bold: '700' as const,
+  },
+};
 
-    h3 {
-      font-size: var(--text-lg);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+// Spacing constants (used for padding, margin, etc.)
+export const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  '2xl': 32,
+  '3xl': 48,
+};
 
-    h4 {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+// Border radius constants
+export const borderRadius = {
+  none: 0,
+  sm: 4,
+  md: 6,
+  lg: 8,
+  xl: 10,
+  '2xl': 12,
+  full: 9999,
+};
 
-    p {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
+// Theme colors for light and dark modes
+export const themeColors = {
+  light: {
+    background: '#ffffff',
+    foreground: '#0a0a0a', // oklch(0.145 0 0) converted
+    card: '#ffffff',
+    cardForeground: '#0a0a0a',
+    popover: '#ffffff',
+    popoverForeground: '#0a0a0a',
+    primary: '#030213',
+    primaryForeground: '#ffffff',
+    secondary: '#f3f3f5',
+    secondaryForeground: '#030213',
+    muted: '#ececf0',
+    mutedForeground: '#717182',
+    accent: '#e9ebef',
+    accentForeground: '#030213',
+    destructive: '#d4183d',
+    destructiveForeground: '#ffffff',
+    border: 'rgba(0, 0, 0, 0.1)',
+    input: 'transparent',
+    inputBackground: '#f3f3f5',
+    switchBackground: '#cbced4',
+    ring: '#a3a3a3',
+    
+    // Chart colors
+    chart1: '#e67e22', // oklch(0.646 0.222 41.116) converted
+    chart2: '#3498db', // oklch(0.6 0.118 184.704) converted
+    chart3: '#2c3e50', // oklch(0.398 0.07 227.392) converted
+    chart4: '#f1c40f', // oklch(0.828 0.189 84.429) converted
+    chart5: '#e74c3c', // oklch(0.769 0.188 70.08) converted
+    
+    // Sidebar colors
+    sidebar: '#fafafa',
+    sidebarForeground: '#0a0a0a',
+    sidebarPrimary: '#030213',
+    sidebarPrimaryForeground: '#fafafa',
+    sidebarAccent: '#f5f5f5',
+    sidebarAccentForeground: '#1a1a1a',
+    sidebarBorder: '#e5e5e5',
+    sidebarRing: '#a3a3a3',
+  },
+  dark: {
+    background: '#0a0a0a', // oklch(0.145 0 0)
+    foreground: '#fafafa', // oklch(0.985 0 0)
+    card: '#0a0a0a',
+    cardForeground: '#fafafa',
+    popover: '#0a0a0a',
+    popoverForeground: '#fafafa',
+    primary: '#fafafa',
+    primaryForeground: '#1a1a1a',
+    secondary: '#262626', // oklch(0.269 0 0)
+    secondaryForeground: '#fafafa',
+    muted: '#262626',
+    mutedForeground: '#a3a3a3',
+    accent: '#262626',
+    accentForeground: '#fafafa',
+    destructive: '#7f1d1d',
+    destructiveForeground: '#fca5a5',
+    border: '#262626',
+    input: '#262626',
+    inputBackground: '#1a1a1a',
+    switchBackground: '#404040',
+    ring: '#525252',
+    
+    // Chart colors
+    chart1: '#8b5cf6', // oklch(0.488 0.243 264.376)
+    chart2: '#10b981', // oklch(0.696 0.17 162.48)
+    chart3: '#f59e0b', // oklch(0.769 0.188 70.08)
+    chart4: '#ec4899', // oklch(0.627 0.265 303.9)
+    chart5: '#f97316', // oklch(0.645 0.246 16.439)
+    
+    // Sidebar colors
+    sidebar: '#1a1a1a',
+    sidebarForeground: '#fafafa',
+    sidebarPrimary: '#8b5cf6',
+    sidebarPrimaryForeground: '#fafafa',
+    sidebarAccent: '#262626',
+    sidebarAccentForeground: '#fafafa',
+    sidebarBorder: '#262626',
+    sidebarRing: '#525252',
+  },
+} as const;
 
-    label {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+// Helper function to get theme colors based on color scheme
+export const getThemeColors = (colorScheme: 'light' | 'dark') => {
+  return themeColors[colorScheme];
+};
 
-    button {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+// Typography presets for React Native Text components
+export const typography = {
+  h1: {
+    fontSize: fonts.size['3xl'],
+    fontWeight: fonts.weight.medium,
+    lineHeight: fonts.size['3xl'] * 1.5,
+  },
+  h2: {
+    fontSize: fonts.size['2xl'],
+    fontWeight: fonts.weight.medium,
+    lineHeight: fonts.size['2xl'] * 1.5,
+  },
+  h3: {
+    fontSize: fonts.size.xl,
+    fontWeight: fonts.weight.medium,
+    lineHeight: fonts.size.xl * 1.5,
+  },
+  h4: {
+    fontSize: fonts.size.lg,
+    fontWeight: fonts.weight.medium,
+    lineHeight: fonts.size.lg * 1.5,
+  },
+  p: {
+    fontSize: fonts.size.base,
+    fontWeight: fonts.weight.normal,
+    lineHeight: fonts.size.base * 1.5,
+  },
+  label: {
+    fontSize: fonts.size.base,
+    fontWeight: fonts.weight.medium,
+    lineHeight: fonts.size.base * 1.5,
+  },
+  button: {
+    fontSize: fonts.size.base,
+    fontWeight: fonts.weight.medium,
+    lineHeight: fonts.size.base * 1.5,
+  },
+  input: {
+    fontSize: fonts.size.base,
+    fontWeight: fonts.weight.normal,
+    lineHeight: fonts.size.base * 1.5,
+  },
+  small: {
+    fontSize: fonts.size.sm,
+    fontWeight: fonts.weight.normal,
+    lineHeight: fonts.size.sm * 1.5,
+  },
+} as const;
 
-    input {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
-  }
-}
+// Default export for backward compatibility
+export default {
+  fonts,
+  spacing,
+  borderRadius,
+  themeColors,
+  getThemeColors,
+  typography,
+};
 
-html {
-  font-size: var(--font-size);
-}`;
-
-export default styles;

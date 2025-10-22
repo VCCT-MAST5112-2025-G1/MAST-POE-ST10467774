@@ -1,31 +1,46 @@
-"use client";
-
 import * as React from "react";
-import * as ProgressPrimitive from "@radix-ui/react-progress";
+import { View, StyleSheet, ViewStyle, ViewProps } from "react-native";
 
-import { cn } from "./utils";
-
-function Progress({
-  className,
-  value,
-  ...props
-}: React.ComponentProps<typeof ProgressPrimitive.Root>) {
-  return (
-    <ProgressPrimitive.Root
-      data-slot="progress"
-      className={cn(
-        "bg-primary/20 relative h-2 w-full overflow-hidden rounded-full",
-        className,
-      )}
-      {...props}
-    >
-      <ProgressPrimitive.Indicator
-        data-slot="progress-indicator"
-        className="bg-primary h-full w-full flex-1 transition-all"
-        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
-      />
-    </ProgressPrimitive.Root>
-  );
+interface ProgressProps extends ViewProps {
+  value?: number;
+  style?: ViewStyle;
 }
+
+const Progress = React.forwardRef<View, ProgressProps>(
+  ({ value = 0, style, ...props }, ref) => {
+    const clampedValue = Math.min(Math.max(value, 0), 100);
+
+    return (
+      <View
+        ref={ref}
+        style={[styles.container, style]}
+        {...props}
+      >
+        <View
+          style={[
+            styles.indicator,
+            { width: `${clampedValue}%` },
+          ]}
+        />
+      </View>
+    );
+  }
+);
+
+Progress.displayName = "Progress";
+
+const styles = StyleSheet.create({
+  container: {
+    height: 8,
+    width: '100%',
+    backgroundColor: '#dbeafe',
+    borderRadius: 9999,
+    overflow: 'hidden',
+  },
+  indicator: {
+    height: '100%',
+    backgroundColor: '#3b82f6',
+  },
+});
 
 export { Progress };

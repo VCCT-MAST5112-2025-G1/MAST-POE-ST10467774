@@ -1,139 +1,258 @@
-"use client";
-
 import * as React from "react";
-import * as SheetPrimitive from "@radix-ui/react-dialog";
-import { X as XIcon } from "lucide-react";
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+  Dimensions,
+  ViewStyle,
+  ViewProps,
+  TextProps,
+} from "react-native";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import { cn } from "./utils";
-
-function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />;
+interface SheetContextValue {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-function SheetTrigger({
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
+const SheetContext = React.createContext<SheetContextValue>({
+  open: false,
+  onOpenChange: () => {},
+});
+
+interface SheetProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children: React.ReactNode;
 }
 
-function SheetClose({
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Close>) {
-  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
+interface SheetTriggerProps extends ViewProps {
+  asChild?: boolean;
+  style?: ViewStyle;
 }
 
-function SheetPortal({
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Portal>) {
-  return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />;
-}
-
-function SheetOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
-  return (
-    <SheetPrimitive.Overlay
-      data-slot="sheet-overlay"
-      className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-function SheetContent({
-  className,
-  children,
-  side = "right",
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Content> & {
+interface SheetContentProps extends ViewProps {
   side?: "top" | "right" | "bottom" | "left";
-}) {
-  return (
-    <SheetPortal>
-      <SheetOverlay />
-      <SheetPrimitive.Content
-        data-slot="sheet-content"
-        className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
-          side === "right" &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
-          side === "left" &&
-            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
-          side === "top" &&
-            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b",
-          side === "bottom" &&
-            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
-          <XIcon className="size-4" />
-          <span className="sr-only">Close</span>
-        </SheetPrimitive.Close>
-      </SheetPrimitive.Content>
-    </SheetPortal>
-  );
+  style?: ViewStyle;
 }
 
-function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="sheet-header"
-      className={cn("flex flex-col gap-1.5 p-4", className)}
-      {...props}
-    />
-  );
+interface SheetHeaderProps extends ViewProps {
+  style?: ViewStyle;
 }
 
-function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="sheet-footer"
-      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
-      {...props}
-    />
-  );
+interface SheetFooterProps extends ViewProps {
+  style?: ViewStyle;
 }
 
-function SheetTitle({
-  className,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Title>) {
-  return (
-    <SheetPrimitive.Title
-      data-slot="sheet-title"
-      className={cn("text-foreground font-semibold", className)}
-      {...props}
-    />
-  );
+interface SheetTitleProps extends TextProps {
+  style?: ViewStyle;
 }
 
-function SheetDescription({
-  className,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Description>) {
-  return (
-    <SheetPrimitive.Description
-      data-slot="sheet-description"
-      className={cn("text-muted-foreground text-sm", className)}
-      {...props}
-    />
-  );
+interface SheetDescriptionProps extends TextProps {
+  style?: ViewStyle;
 }
 
-export {
-  Sheet,
-  SheetTrigger,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetFooter,
-  SheetTitle,
-  SheetDescription,
+const Sheet = ({ open, onOpenChange, children }: SheetProps) => {
+  return (
+    <SheetContext.Provider value={{ open: open || false, onOpenChange: onOpenChange || (() => {}) }}>
+      {children}
+    </SheetContext.Provider>
+  );
 };
+
+const SheetTrigger = React.forwardRef<View, SheetTriggerProps>(
+  ({ asChild, children, ...props }, ref) => {
+    const { onOpenChange } = React.useContext(SheetContext);
+
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children as any, {
+        onPress: () => onOpenChange(true),
+      });
+    }
+
+    return (
+      <TouchableOpacity ref={ref as any} onPress={() => onOpenChange(true)} {...props}>
+        {children}
+      </TouchableOpacity>
+    );
+  }
+);
+SheetTrigger.displayName = "SheetTrigger";
+
+const SheetContent = React.forwardRef<View, SheetContentProps>(
+  ({ side = "right", style, children, ...props }, ref) => {
+    const { open, onOpenChange } = React.useContext(SheetContext);
+    const slideAnim = React.useRef(new Animated.Value(0)).current;
+    const screenWidth = Dimensions.get('window').width;
+    const screenHeight = Dimensions.get('window').height;
+
+    React.useEffect(() => {
+      Animated.timing(slideAnim, {
+        toValue: open ? 1 : 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }, [open]);
+
+    const getTransform = () => {
+      switch (side) {
+        case "right":
+          return [{ translateX: slideAnim.interpolate({ inputRange: [0, 1], outputRange: [screenWidth, 0] }) }];
+        case "left":
+          return [{ translateX: slideAnim.interpolate({ inputRange: [0, 1], outputRange: [-screenWidth, 0] }) }];
+        case "top":
+          return [{ translateY: slideAnim.interpolate({ inputRange: [0, 1], outputRange: [-screenHeight, 0] }) }];
+        case "bottom":
+          return [{ translateY: slideAnim.interpolate({ inputRange: [0, 1], outputRange: [screenHeight, 0] }) }];
+      }
+    };
+
+    const getContentStyle = () => {
+      switch (side) {
+        case "right":
+          return styles.contentRight;
+        case "left":
+          return styles.contentLeft;
+        case "top":
+          return styles.contentTop;
+        case "bottom":
+          return styles.contentBottom;
+      }
+    };
+
+    return (
+      <Modal visible={open} transparent animationType="none" onRequestClose={() => onOpenChange(false)}>
+        <TouchableOpacity
+          style={styles.overlay}
+          activeOpacity={1}
+          onPress={() => onOpenChange(false)}
+        >
+          <Animated.View
+            ref={ref}
+            style={[
+              styles.content,
+              getContentStyle(),
+              { transform: getTransform() },
+              style,
+            ]}
+            onStartShouldSetResponder={() => true}
+            {...props}
+          >
+            {children}
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => onOpenChange(false)}
+            >
+              <MaterialIcons name="close" size={20} color="#000" />
+            </TouchableOpacity>
+          </Animated.View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  }
+);
+SheetContent.displayName = "SheetContent";
+
+const SheetHeader = React.forwardRef<View, SheetHeaderProps>(
+  ({ style, ...props }, ref) => {
+    return <View ref={ref} style={[styles.header, style]} {...props} />;
+  }
+);
+SheetHeader.displayName = "SheetHeader";
+
+const SheetFooter = React.forwardRef<View, SheetFooterProps>(
+  ({ style, ...props }, ref) => {
+    return <View ref={ref} style={[styles.footer, style]} {...props} />;
+  }
+);
+SheetFooter.displayName = "SheetFooter";
+
+const SheetTitle = React.forwardRef<Text, SheetTitleProps>(
+  ({ style, ...props }, ref) => {
+    return <Text ref={ref} style={[styles.title, style]} {...props} />;
+  }
+);
+SheetTitle.displayName = "SheetTitle";
+
+const SheetDescription = React.forwardRef<Text, SheetDescriptionProps>(
+  ({ style, ...props }, ref) => {
+    return <Text ref={ref} style={[styles.description, style]} {...props} />;
+  }
+);
+SheetDescription.displayName = "SheetDescription";
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  content: {
+    position: 'absolute',
+    backgroundColor: '#fff',
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  contentRight: {
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: '75%',
+    maxWidth: 400,
+  },
+  contentLeft: {
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: '75%',
+    maxWidth: 400,
+  },
+  contentTop: {
+    top: 0,
+    left: 0,
+    right: 0,
+    maxHeight: '50%',
+  },
+  contentBottom: {
+    bottom: 0,
+    left: 0,
+    right: 0,
+    maxHeight: '50%',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    padding: 8,
+  },
+  header: {
+    marginBottom: 16,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+    marginTop: 24,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+});
+
+export { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription };
+
+
+

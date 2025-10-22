@@ -1,48 +1,108 @@
-"use client";
-
 import * as React from "react";
-import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { Modal, View, TouchableOpacity, StyleSheet, ViewStyle, ViewProps } from "react-native";
 
-import { cn } from "./utils";
-
-function Popover({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Root>) {
-  return <PopoverPrimitive.Root data-slot="popover" {...props} />;
+interface PopoverContextValue {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-function PopoverTrigger({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
+const PopoverContext = React.createContext<PopoverContextValue>({
+  open: false,
+  onOpenChange: () => {},
+});
+
+interface PopoverProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children: React.ReactNode;
 }
 
-function PopoverContent({
-  className,
-  align = "center",
-  sideOffset = 4,
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Content>) {
+interface PopoverContentProps extends ViewProps {
+  style?: ViewStyle;
+  align?: "start" | "center" | "end";
+}
+
+const Popover: React.FC<PopoverProps> = ({ open = false, onOpenChange, children }) => {
   return (
-    <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Content
-        data-slot="popover-content"
-        align={align}
-        sideOffset={sideOffset}
-        className={cn(
-          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
-          className,
-        )}
-        {...props}
-      />
-    </PopoverPrimitive.Portal>
+    <PopoverContext.Provider value={{ open, onOpenChange: onOpenChange || (() => {}) }}>
+      {children}
+    </PopoverContext.Provider>
   );
-}
+};
 
-function PopoverAnchor({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {
-  return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />;
-}
+const PopoverTrigger: React.FC<{ children: React.ReactElement; asChild?: boolean }> = ({ children }) => {
+  const { onOpenChange } = React.useContext(PopoverContext);
+  
+  return React.cloneElement(children, {
+    onPress: () => onOpenChange(true),
+  } as any);
+};
 
-export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor };
+const PopoverContent = React.forwardRef<View, PopoverContentProps>(
+  ({ style, children, align = "center", ...props }, ref) => {
+    const { open, onOpenChange } = React.useContext(PopoverContext);
+
+    return (
+      <Modal
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => onOpenChange(false)}
+      >
+        <TouchableOpacity
+          style={styles.overlay}
+          activeOpacity={1}
+          onPress={() => onOpenChange(false)}
+        >
+          <View
+            ref={ref}
+            style={[
+              styles.content,
+              align === "start" && styles.alignStart,
+              align === "end" && styles.alignEnd,
+              style,
+            ]}
+            {...props}
+          >
+            {children}
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  }
+);
+
+PopoverContent.displayName = "PopoverContent";
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 16,
+    width: 288,
+    maxWidth: '90%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  alignStart: {
+    alignSelf: 'flex-start',
+    marginLeft: 16,
+  },
+  alignEnd: {
+    alignSelf: 'flex-end',
+    marginRight: 16,
+  },
+});
+
+export { Popover, PopoverTrigger, PopoverContent };
+
+

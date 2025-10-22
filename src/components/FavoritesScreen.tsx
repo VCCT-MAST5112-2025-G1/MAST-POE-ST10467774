@@ -15,22 +15,25 @@ interface MenuItem {
 }
 
 const ImageWithFallback = ({ src, alt, style, ...props }: any) => {
+  const [uri, setUri] = React.useState<string | undefined>(src);
   const placeholder =
     'data:image/svg+xml;utf8,' +
     encodeURIComponent(
       `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="24">Image not available</text></svg>`
     );
 
+  React.useEffect(() => {
+    setUri(src);
+  }, [src]);
+
   return (
     <Image
-      source={{ uri: src || placeholder }}
+      source={{ uri: uri || placeholder }}
       style={style}
-      onError={(e) => {
-        const t = e.nativeEvent.source as any;
-        if (t.uri !== placeholder) {
-          t.uri = placeholder;
-        }
+      onError={() => {
+        setUri(placeholder);
       }}
+      accessibilityLabel={alt}
       {...props}
     />
   );

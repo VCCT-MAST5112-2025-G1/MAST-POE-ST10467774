@@ -1,98 +1,194 @@
-"use client";
+import * as React from 'react';
+import { View, TextInput, StyleSheet, Text, ViewStyle, TextStyle } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import * as React from "react";
-/**
- * Local shim for OTPInput and OTPInputContext to avoid a missing external module during development.
- * This provides minimal types and a simple component/context implementation used by this file.
- */
-type OTPSlot = { char?: string; hasFakeCaret?: boolean; isActive?: boolean };
+// ============================================================================
+// Context & Types
+// ============================================================================
 
-export const OTPInputContext = React.createContext<{ slots: OTPSlot[] } | null>(null);
-
-export const OTPInput: React.FC<
-  React.ComponentProps<"div"> & { value?: string; onChange?: (v: string) => void; length?: number; containerClassName?: string }
-> = (props) => {
-  // Minimal shim: render an outer container with containerClassName and an inner div for forwarded props.
-  const { children, containerClassName, className, ...rest } = props as any;
-  return (
-    <div className={containerClassName}>
-      <div className={className} {...rest}>
-        {children}
-      </div>
-    </div>
-  );
+type OTPSlot = {
+  char?: string;
+  hasFakeCaret?: boolean;
+  isActive?: boolean;
 };
 
-import { MinusIcon } from "lucide-react";
-
-import { cn } from "./utils";
-
-function InputOTP({
-  className,
-  containerClassName,
-  ...props
-}: React.ComponentProps<typeof OTPInput> & {
-  containerClassName?: string;
-}) {
-  return (
-    <OTPInput
-      data-slot="input-otp"
-      containerClassName={cn(
-        "flex items-center gap-2 has-disabled:opacity-50",
-        containerClassName,
-      )}
-      className={cn("disabled:cursor-not-allowed", className)}
-      {...props}
-    />
-  );
+interface OTPInputContextValue {
+  slots: OTPSlot[];
 }
 
-function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="input-otp-group"
-      className={cn("flex items-center gap-1", className)}
-      {...props}
-    />
-  );
+const OTPInputContext = React.createContext<OTPInputContextValue | null>(null);
+
+// ============================================================================
+// InputOTP (Container)
+// ============================================================================
+
+interface InputOTPProps {
+  value?: string;
+  onChange?: (value: string) => void;
+  length?: number;
+  style?: ViewStyle;
+  children?: React.ReactNode;
 }
 
-function InputOTPSlot({
-  index,
-  className,
-  ...props
-}: React.ComponentProps<"div"> & {
+const InputOTP = React.forwardRef<View, InputOTPProps>(
+  ({ value = '', onChange, length = 6, style, children }, ref) => {
+    const [activeIndex, setActiveIndex] = React.useState(0);
+
+    // Create slots from value
+    const slots: OTPSlot[] = React.useMemo(() => {
+      const chars = value.split('');
+      return Array.from({ length }, (_, i) => ({
+        char: chars[i] || undefined,
+        isActive: i === activeIndex,
+        hasFakeCaret: i === activeIndex && !chars[i],
+      }));
+    }, [value, length, activeIndex]);
+
+    const contextValue: OTPInputContextValue = React.useMemo(
+      () => ({ slots }),
+      [slots]
+    );
+
+    return (
+      <OTPInputContext.Provider value={contextValue}>
+        <View ref={ref} style={[styles.container, style]}>
+          {children}
+        </View>
+      </OTPInputContext.Provider>
+    );
+  }
+);
+
+InputOTP.displayName = 'InputOTP';
+
+// ============================================================================
+// InputOTPGroup
+// ============================================================================
+
+interface InputOTPGroupProps {
+  style?: ViewStyle;
+  children?: React.ReactNode;
+}
+
+const InputOTPGroup = React.forwardRef<View, InputOTPGroupProps>(
+  ({ style, children }, ref) => {
+    return (
+      <View ref={ref} style={[styles.group, style]}>
+        {children}
+      </View>
+    );
+  }
+);
+
+InputOTPGroup.displayName = 'InputOTPGroup';
+
+// ============================================================================
+// InputOTPSlot
+// ============================================================================
+
+interface InputOTPSlotProps {
   index: number;
-}) {
-  const inputOTPContext = React.useContext(OTPInputContext);
-  const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {};
-
-  return (
-    <div
-      data-slot="input-otp-slot"
-      data-active={isActive}
-      className={cn(
-        "data-[active=true]:border-ring data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:ring-destructive/20 dark:data-[active=true]:aria-invalid:ring-destructive/40 aria-invalid:border-destructive data-[active=true]:aria-invalid:border-destructive dark:bg-input/30 border-input relative flex h-9 w-9 items-center justify-center border-y border-r text-sm bg-input-background transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md data-[active=true]:z-10 data-[active=true]:ring-[3px]",
-        className,
-      )}
-      {...props}
-    >
-      {char}
-      {hasFakeCaret && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />
-        </div>
-      )}
-    </div>
-  );
+  style?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
-function InputOTPSeparator({ ...props }: React.ComponentProps<"div">) {
-  return (
-    <div data-slot="input-otp-separator" role="separator" {...props}>
-      <MinusIcon />
-    </div>
-  );
+const InputOTPSlot = React.forwardRef<View, InputOTPSlotProps>(
+  ({ index, style, textStyle }, ref) => {
+    const context = React.useContext(OTPInputContext);
+    const { char, hasFakeCaret, isActive } = context?.slots[index] ?? {};
+
+    return (
+      <View
+        ref={ref}
+        style={[
+          styles.slot,
+          isActive && styles.slotActive,
+          style,
+        ]}
+      >
+        <Text style={[styles.slotText, textStyle]}>{char || ''}</Text>
+        {hasFakeCaret && (
+          <View style={styles.caret} />
+        )}
+      </View>
+    );
+  }
+);
+
+InputOTPSlot.displayName = 'InputOTPSlot';
+
+// ============================================================================
+// InputOTPSeparator
+// ============================================================================
+
+interface InputOTPSeparatorProps {
+  style?: ViewStyle;
 }
+
+const InputOTPSeparator = React.forwardRef<View, InputOTPSeparatorProps>(
+  ({ style }, ref) => {
+    return (
+      <View ref={ref} style={[styles.separator, style]}>
+        <Icon name="remove" size={16} color="#666" />
+      </View>
+    );
+  }
+);
+
+InputOTPSeparator.displayName = 'InputOTPSeparator';
+
+// ============================================================================
+// Styles
+// ============================================================================
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  group: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  slot: {
+    width: 40,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f9fafb',
+    position: 'relative',
+  },
+  slotActive: {
+    borderColor: '#3b82f6',
+    borderWidth: 2,
+  },
+  slotText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#000',
+  },
+  caret: {
+    position: 'absolute',
+    width: 1,
+    height: 16,
+    backgroundColor: '#000',
+  },
+  separator: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 4,
+  },
+});
+
+// ============================================================================
+// Exports
+// ============================================================================
 
 export { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator };
+
+

@@ -1,116 +1,194 @@
-"use client";
-
 import * as React from "react";
+import { View, Text, ScrollView, StyleSheet, ViewStyle, TextStyle, ViewProps, TextProps } from "react-native";
 
-import { cn } from "./utils";
+interface TableProps extends ViewProps {
+  style?: ViewStyle;
+}
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
-  return (
-    <div
-      data-slot="table-container"
-      className="relative w-full overflow-x-auto"
-    >
-      <table
-        data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
+interface TableHeaderProps extends ViewProps {
+  style?: ViewStyle;
+}
+
+interface TableBodyProps extends ViewProps {
+  style?: ViewStyle;
+}
+
+interface TableFooterProps extends ViewProps {
+  style?: ViewStyle;
+}
+
+interface TableRowProps extends ViewProps {
+  style?: ViewStyle;
+}
+
+interface TableHeadProps extends TextProps {
+  style?: TextStyle;
+}
+
+interface TableCellProps extends TextProps {
+  style?: TextStyle;
+}
+
+interface TableCaptionProps extends TextProps {
+  style?: TextStyle;
+}
+
+const Table = React.forwardRef<ScrollView, TableProps>(
+  ({ style, ...props }, ref) => {
+    return (
+      <ScrollView
+        ref={ref}
+        horizontal
+        style={[styles.tableContainer, style]}
         {...props}
       />
-    </div>
-  );
-}
+    );
+  }
+);
+Table.displayName = "Table";
 
-function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
-  return (
-    <thead
-      data-slot="table-header"
-      className={cn("[&_tr]:border-b", className)}
-      {...props}
-    />
-  );
-}
+const TableHeader = React.forwardRef<View, TableHeaderProps>(
+  ({ style, ...props }, ref) => {
+    return (
+      <View
+        ref={ref}
+        style={[styles.header, style]}
+        {...props}
+      />
+    );
+  }
+);
+TableHeader.displayName = "TableHeader";
 
-function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
-  return (
-    <tbody
-      data-slot="table-body"
-      className={cn("[&_tr:last-child]:border-0", className)}
-      {...props}
-    />
-  );
-}
+const TableBody = React.forwardRef<View, TableBodyProps>(
+  ({ style, ...props }, ref) => {
+    return (
+      <View
+        ref={ref}
+        style={[styles.body, style]}
+        {...props}
+      />
+    );
+  }
+);
+TableBody.displayName = "TableBody";
 
-function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
-  return (
-    <tfoot
-      data-slot="table-footer"
-      className={cn(
-        "bg-muted/50 border-t font-medium [&>tr]:last:border-b-0",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+const TableFooter = React.forwardRef<View, TableFooterProps>(
+  ({ style, ...props }, ref) => {
+    return (
+      <View
+        ref={ref}
+        style={[styles.footer, style]}
+        {...props}
+      />
+    );
+  }
+);
+TableFooter.displayName = "TableFooter";
 
-function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
-  return (
-    <tr
-      data-slot="table-row"
-      className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+const TableRow = React.forwardRef<View, TableRowProps>(
+  ({ style, ...props }, ref) => {
+    return (
+      <View
+        ref={ref}
+        style={[styles.row, style]}
+        {...props}
+      />
+    );
+  }
+);
+TableRow.displayName = "TableRow";
 
-function TableHead({ className, ...props }: React.ComponentProps<"th">) {
-  return (
-    <th
-      data-slot="table-head"
-      className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+const TableHead = React.forwardRef<Text, TableHeadProps>(
+  ({ style, ...props }, ref) => {
+    return (
+      <Text
+        ref={ref}
+        style={[styles.head, style]}
+        {...props}
+      />
+    );
+  }
+);
+TableHead.displayName = "TableHead";
 
-function TableCell({ className, ...props }: React.ComponentProps<"td">) {
-  return (
-    <td
-      data-slot="table-cell"
-      className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
+const TableCell = React.forwardRef<Text, TableCellProps>(
+  ({ style, ...props }, ref) => {
+    return (
+      <Text
+        ref={ref}
+        style={[styles.cell, style]}
+        {...props}
+      />
+    );
+  }
+);
+TableCell.displayName = "TableCell";
 
-function TableCaption({
-  className,
-  ...props
-}: React.ComponentProps<"caption">) {
-  return (
-    <caption
-      data-slot="table-caption"
-      className={cn("text-muted-foreground mt-4 text-sm", className)}
-      {...props}
-    />
-  );
-}
+const TableCaption = React.forwardRef<Text, TableCaptionProps>(
+  ({ style, ...props }, ref) => {
+    return (
+      <Text
+        ref={ref}
+        style={[styles.caption, style]}
+        {...props}
+      />
+    );
+  }
+);
+TableCaption.displayName = "TableCaption";
+
+const styles = StyleSheet.create({
+  tableContainer: {
+    width: '100%',
+  },
+  header: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  body: {
+    // Body specific styles
+  },
+  footer: {
+    backgroundColor: '#f9fafb',
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    fontWeight: '500',
+  },
+  row: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  head: {
+    height: 40,
+    paddingHorizontal: 8,
+    textAlign: 'left',
+    fontWeight: '500',
+    color: '#000',
+    fontSize: 14,
+  },
+  cell: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    fontSize: 14,
+    color: '#000',
+  },
+  caption: {
+    marginTop: 16,
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+});
 
 export {
   Table,
   TableHeader,
   TableBody,
   TableFooter,
-  TableHead,
   TableRow,
+  TableHead,
   TableCell,
   TableCaption,
 };

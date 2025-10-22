@@ -1,53 +1,93 @@
-"use client";
-
 import * as React from "react";
-import * as AvatarPrimitive from "@radix-ui/react-avatar";
+import { View, Image, Text, StyleSheet, ViewStyle, ImageStyle, TextStyle, ViewProps, ImageProps, TextProps } from "react-native";
 
-import { cn } from "./utils";
-
-function Avatar({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
-  return (
-    <AvatarPrimitive.Root
-      data-slot="avatar"
-      className={cn(
-        "relative flex size-10 shrink-0 overflow-hidden rounded-full",
-        className,
-      )}
-      {...props}
-    />
-  );
+interface AvatarProps extends ViewProps {
+  style?: ViewStyle;
 }
 
-function AvatarImage({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
-  return (
-    <AvatarPrimitive.Image
-      data-slot="avatar-image"
-      className={cn("aspect-square size-full", className)}
-      {...props}
-    />
-  );
+interface AvatarImageProps extends ImageProps {
+  style?: ImageStyle;
 }
 
-function AvatarFallback({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
-  return (
-    <AvatarPrimitive.Fallback
-      data-slot="avatar-fallback"
-      className={cn(
-        "bg-muted flex size-full items-center justify-center rounded-full",
-        className,
-      )}
-      {...props}
-    />
-  );
+interface AvatarFallbackProps extends ViewProps {
+  style?: ViewStyle;
 }
+
+const Avatar = React.forwardRef<View, AvatarProps>(
+  ({ style, children, ...props }, ref) => {
+    return (
+      <View
+        ref={ref}
+        style={[styles.avatar, style]}
+        {...props}
+      >
+        {children}
+      </View>
+    );
+  }
+);
+
+Avatar.displayName = "Avatar";
+
+const AvatarImage = React.forwardRef<Image, AvatarImageProps>(
+  ({ style, ...props }, ref) => {
+    return (
+      <Image
+        ref={ref}
+        style={[styles.image, style]}
+        {...props}
+      />
+    );
+  }
+);
+
+AvatarImage.displayName = "AvatarImage";
+
+const AvatarFallback = React.forwardRef<View, AvatarFallbackProps>(
+  ({ style, children, ...props }, ref) => {
+    return (
+      <View
+        ref={ref}
+        style={[styles.fallback, style]}
+        {...props}
+      >
+        {typeof children === 'string' ? (
+          <Text style={styles.fallbackText}>{children}</Text>
+        ) : (
+          children
+        )}
+      </View>
+    );
+  }
+);
+
+AvatarFallback.displayName = "AvatarFallback";
+
+const styles = StyleSheet.create({
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  fallback: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+  },
+  fallbackText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#6b7280',
+  },
+});
 
 export { Avatar, AvatarImage, AvatarFallback };

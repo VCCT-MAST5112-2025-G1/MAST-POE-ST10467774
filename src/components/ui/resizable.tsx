@@ -1,56 +1,124 @@
-"use client";
+import * as React from 'react';
+import { View, StyleSheet, ViewStyle } from 'react-native';
 
-import * as React from "react";
-import { GripVertical } from "lucide-react";
-// @ts-ignore - no type declarations for 'react-resizable-panels'
-import * as ResizablePrimitive from "react-resizable-panels";
-import { cn } from "./utils";
 
-function ResizablePanelGroup({
-  className,
-  ...props
-}: React.ComponentProps<typeof ResizablePrimitive.PanelGroup>) {
-  return (
-    <ResizablePrimitive.PanelGroup
-      data-slot="resizable-panel-group"
-      className={cn(
-        "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
-        className,
-      )}
-      {...props}
-    />
-  );
+
+// ============================================================================
+// ResizablePanelGroup
+// ============================================================================
+
+interface ResizablePanelGroupProps {
+  direction?: 'horizontal' | 'vertical';
+  style?: ViewStyle;
+  children: React.ReactNode;
 }
 
-function ResizablePanel({
-  ...props
-}: React.ComponentProps<typeof ResizablePrimitive.Panel>) {
-  return <ResizablePrimitive.Panel data-slot="resizable-panel" {...props} />;
-}
-
-function ResizableHandle({
-  withHandle,
-  className,
-  ...props
-}: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & {
-  withHandle?: boolean;
-}) {
-  return (
-    <ResizablePrimitive.PanelResizeHandle
-      data-slot="resizable-handle"
-      className={cn(
-        "bg-border focus-visible:ring-ring relative flex w-px items-center justify-center after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:ring-1 focus-visible:ring-offset-1 focus-visible:outline-hidden data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:after:left-0 data-[panel-group-direction=vertical]:after:h-1 data-[panel-group-direction=vertical]:after:w-full data-[panel-group-direction=vertical]:after:-translate-y-1/2 data-[panel-group-direction=vertical]:after:translate-x-0 [&[data-panel-group-direction=vertical]>div]:rotate-90",
-        className,
-      )}
-      {...props}
+const ResizablePanelGroup = React.forwardRef<View, ResizablePanelGroupProps>(
+  ({ direction = 'horizontal', style, children }, ref) => (
+    <View
+      ref={ref}
+      style={[
+        styles.panelGroup,
+        direction === 'vertical' ? styles.panelGroupVertical : styles.panelGroupHorizontal,
+        style,
+      ]}
     >
-      {withHandle && (
-        <div className="bg-border z-10 flex h-4 w-3 items-center justify-center rounded-xs border">
-          <GripVertical className="size-2.5" />
-        </div>
-      )}
-    </ResizablePrimitive.PanelResizeHandle>
-  );
+      {children}
+    </View>
+  )
+);
+
+ResizablePanelGroup.displayName = 'ResizablePanelGroup';
+
+// ============================================================================
+// ResizablePanel
+// ============================================================================
+
+interface ResizablePanelProps {
+  defaultSize?: number;
+  minSize?: number;
+  maxSize?: number;
+  style?: ViewStyle;
+  children: React.ReactNode;
 }
+
+const ResizablePanel = React.forwardRef<View, ResizablePanelProps>(
+  ({ defaultSize = 50, style, children }, ref) => (
+    <View
+      ref={ref}
+      style={[
+        styles.panel,
+        {
+          flex: defaultSize / 100, // Convert percentage to flex value
+        },
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  )
+);
+
+ResizablePanel.displayName = 'ResizablePanel';
+
+// ============================================================================
+// ResizableHandle
+// ============================================================================
+
+interface ResizableHandleProps {
+  withHandle?: boolean;
+  style?: ViewStyle;
+}
+
+const ResizableHandle = React.forwardRef<View, ResizableHandleProps>(
+  ({ withHandle, style }, ref) => (
+    <View ref={ref} style={[styles.handle, style]}>
+      {withHandle && <View style={styles.handleGrip} />}
+    </View>
+  )
+);
+
+ResizableHandle.displayName = 'ResizableHandle';
+
+// ============================================================================
+// Styles
+// ============================================================================
+
+const styles = StyleSheet.create({
+  panelGroup: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  panelGroupHorizontal: {
+    flexDirection: 'row',
+  },
+  panelGroupVertical: {
+    flexDirection: 'column',
+  },
+  panel: {
+    overflow: 'hidden',
+  },
+  handle: {
+    width: 4,
+    backgroundColor: '#e5e7eb',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  handleGrip: {
+    width: 12,
+    height: 16,
+    backgroundColor: '#d1d5db',
+    borderRadius: 2,
+    borderWidth: 1,
+    borderColor: '#9ca3af',
+  },
+});
+
+// ============================================================================
+// Exports
+// ============================================================================
 
 export { ResizablePanelGroup, ResizablePanel, ResizableHandle };
+
+

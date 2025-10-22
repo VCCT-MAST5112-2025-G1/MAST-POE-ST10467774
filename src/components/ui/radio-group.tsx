@@ -1,45 +1,104 @@
-"use client";
-
 import * as React from "react";
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { CircleIcon } from "lucide-react";
+import { View, TouchableOpacity, StyleSheet, ViewStyle, ViewProps } from "react-native";
 
-import { cn } from "./utils";
-
-function RadioGroup({
-  className,
-  ...props
-}: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
-  return (
-    <RadioGroupPrimitive.Root
-      data-slot="radio-group"
-      className={cn("grid gap-3", className)}
-      {...props}
-    />
-  );
+interface RadioGroupContextValue {
+  value?: string;
+  onValueChange?: (value: string) => void;
 }
 
-function RadioGroupItem({
-  className,
-  ...props
-}: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
-  return (
-    <RadioGroupPrimitive.Item
-      data-slot="radio-group-item"
-      className={cn(
-        "border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
-        className,
-      )}
-      {...props}
-    >
-      <RadioGroupPrimitive.Indicator
-        data-slot="radio-group-indicator"
-        className="relative flex items-center justify-center"
+const RadioGroupContext = React.createContext<RadioGroupContextValue>({});
+
+interface RadioGroupProps extends ViewProps {
+  value?: string;
+  onValueChange?: (value: string) => void;
+  style?: ViewStyle;
+}
+
+interface RadioGroupItemProps extends ViewProps {
+  value: string;
+  style?: ViewStyle;
+  disabled?: boolean;
+}
+
+const RadioGroup = React.forwardRef<View, RadioGroupProps>(
+  ({ value, onValueChange, style, children, ...props }, ref) => {
+    return (
+      <RadioGroupContext.Provider value={{ value, onValueChange }}>
+        <View ref={ref} style={[styles.radioGroup, style]} {...props}>
+          {children}
+        </View>
+      </RadioGroupContext.Provider>
+    );
+  }
+);
+
+RadioGroup.displayName = "RadioGroup";
+
+const RadioGroupItem = React.forwardRef<View, RadioGroupItemProps>(
+  ({ value, style, disabled, ...props }, ref) => {
+    const context = React.useContext(RadioGroupContext);
+    const isSelected = context.value === value;
+
+    const handlePress = () => {
+      if (!disabled && context.onValueChange) {
+        context.onValueChange(value);
+      }
+    };
+
+    return (
+      <TouchableOpacity
+        onPress={handlePress}
+        disabled={disabled}
+        style={[styles.item, disabled && styles.disabled]}
       >
-        <CircleIcon className="fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
-      </RadioGroupPrimitive.Indicator>
-    </RadioGroupPrimitive.Item>
-  );
-}
+        <View
+          ref={ref}
+          style={[
+            styles.radio,
+            isSelected && styles.radioSelected,
+            style,
+          ]}
+          {...props}
+        >
+          {isSelected && <View style={styles.indicator} />}
+        </View>
+      </TouchableOpacity>
+    );
+  }
+);
+
+RadioGroupItem.displayName = "RadioGroupItem";
+
+const styles = StyleSheet.create({
+  radioGroup: {
+    gap: 12,
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  radio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#d1d5db',
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  radioSelected: {
+    borderColor: '#3b82f6',
+  },
+  indicator: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#3b82f6',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+});
 
 export { RadioGroup, RadioGroupItem };

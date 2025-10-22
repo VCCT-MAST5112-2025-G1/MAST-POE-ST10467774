@@ -1,161 +1,422 @@
-"use client";
+import * as React from 'react';
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  StyleSheet,
+  Animated,
+  Dimensions,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 
-import * as React from "react";
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-/**
- * Local lightweight shim for 'vaul' Drawer primitives to avoid depending on the external package.
- * These components forward props and refs to simple DOM elements so this file compiles without 'vaul'.
- * If you later install the real 'vaul' package, remove this shim and restore the original import.
- */
-const DrawerPrimitive: any = {
-  Root: (props: any) => <>{props.children}</>,
-  Trigger: React.forwardRef<any, any>(function Trigger(props, ref) {
-    return <button ref={ref} {...props} />;
-  }),
-  Portal: React.forwardRef<any, any>(function Portal(props, ref) {
-    return <div ref={ref}>{props.children}</div>;
-  }),
-  Close: React.forwardRef<any, any>(function Close(props, ref) {
-    return <button ref={ref} {...props} />;
-  }),
-  Overlay: React.forwardRef<any, any>(function Overlay(props, ref) {
-    return <div ref={ref} {...props} />;
-  }),
-  Content: React.forwardRef<any, any>(function Content(props, ref) {
-    return <div ref={ref} {...props} />;
-  }),
-  Title: React.forwardRef<any, any>(function Title(props, ref) {
-    return <div ref={ref} {...props} />;
-  }),
-  Description: React.forwardRef<any, any>(function Description(props, ref) {
-    return <div ref={ref} {...props} />;
-  }),
+// ============================================================================
+// Context
+// ============================================================================
+
+interface DrawerContextValue {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  direction?: 'top' | 'bottom' | 'left' | 'right';
+}
+
+const DrawerContext = React.createContext<DrawerContextValue | undefined>(undefined);
+
+const useDrawer = () => {
+  const context = React.useContext(DrawerContext);
+  if (!context) {
+    throw new Error('Drawer components must be used within a Drawer');
+  }
+  return context;
 };
 
-import { cn } from "./utils";
+// ============================================================================
+// Drawer (Root)
+// ============================================================================
 
-function Drawer({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
+interface DrawerProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  direction?: 'top' | 'bottom' | 'left' | 'right';
+  children: React.ReactNode;
 }
 
-function DrawerTrigger({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
-  return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />;
+const Drawer = React.forwardRef<View, DrawerProps>(
+  ({ open: controlledOpen, onOpenChange, direction = 'bottom', children }, ref) => {
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
+
+    const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen;
+    const setOpen = React.useCallback(
+      (newOpen: boolean) => {
+        if (controlledOpen === undefined) {
+          setUncontrolledOpen(newOpen);
+        }
+        onOpenChange?.(newOpen);
+      },
+      [controlledOpen, onOpenChange]
+    );
+
+    const contextValue: DrawerContextValue = React.useMemo(
+      () => ({ open, setOpen, direction }),
+      [open, setOpen, direction]
+    );
+
+    return (
+      <DrawerContext.Provider value={contextValue}>
+        <View ref={ref}>{children}</View>
+      </DrawerContext.Provider>
+    );
+  }
+);
+
+Drawer.displayName = 'Drawer';
+
+// ============================================================================
+// DrawerTrigger
+// ============================================================================
+
+interface DrawerTriggerProps {
+  asChild?: boolean;
+  children: React.ReactNode;
+  style?: ViewStyle;
 }
 
-function DrawerPortal({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Portal>) {
-  return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />;
-}
+const DrawerTrigger = React.forwardRef<View, DrawerTriggerProps>(
+  ({ asChild, children, style }, ref) => {
+    const { setOpen } = useDrawer();
 
-function DrawerClose({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Close>) {
-  return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />;
-}
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children, {
+        onPress: () => setOpen(true),
+      } as any);
+    }
 
-function DrawerOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
-  return (
-    <DrawerPrimitive.Overlay
-      data-slot="drawer-overlay"
-      className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-function DrawerContent({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
-  return (
-    <DrawerPortal data-slot="drawer-portal">
-      <DrawerOverlay />
-      <DrawerPrimitive.Content
-        data-slot="drawer-content"
-        className={cn(
-          "group/drawer-content bg-background fixed z-50 flex h-auto flex-col",
-          "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b",
-          "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t",
-          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
-          "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:sm:max-w-sm",
-          className,
-        )}
-        {...props}
-      >
-        <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+    return (
+      <TouchableOpacity onPress={() => setOpen(true)} style={style}>
         {children}
-      </DrawerPrimitive.Content>
-    </DrawerPortal>
-  );
+      </TouchableOpacity>
+    );
+  }
+);
+
+DrawerTrigger.displayName = 'DrawerTrigger';
+
+// ============================================================================
+// DrawerClose
+// ============================================================================
+
+interface DrawerCloseProps {
+  asChild?: boolean;
+  children: React.ReactNode;
+  style?: ViewStyle;
 }
 
-function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="drawer-header"
-      className={cn("flex flex-col gap-1.5 p-4", className)}
-      {...props}
-    />
-  );
+const DrawerClose = React.forwardRef<View, DrawerCloseProps>(
+  ({ asChild, children, style }, ref) => {
+    const { setOpen } = useDrawer();
+
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children, {
+        onPress: () => setOpen(false),
+      } as any);
+    }
+
+    return (
+      <TouchableOpacity onPress={() => setOpen(false)} style={style}>
+        {children}
+      </TouchableOpacity>
+    );
+  }
+);
+
+DrawerClose.displayName = 'DrawerClose';
+
+// ============================================================================
+// DrawerOverlay
+// ============================================================================
+
+interface DrawerOverlayProps {
+  style?: ViewStyle;
 }
 
-function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
+const DrawerOverlay = React.forwardRef<View, DrawerOverlayProps>(({ style }, ref) => {
+  const { setOpen } = useDrawer();
+
   return (
-    <div
-      data-slot="drawer-footer"
-      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
-      {...props}
+    <TouchableOpacity
+      ref={ref}
+      style={[styles.overlay, style]}
+      activeOpacity={1}
+      onPress={() => setOpen(false)}
     />
   );
+});
+
+DrawerOverlay.displayName = 'DrawerOverlay';
+
+// ============================================================================
+// DrawerContent
+// ============================================================================
+
+interface DrawerContentProps {
+  style?: ViewStyle;
+  children: React.ReactNode;
 }
 
-function DrawerTitle({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Title>) {
-  return (
-    <DrawerPrimitive.Title
-      data-slot="drawer-title"
-      className={cn("text-foreground font-semibold", className)}
-      {...props}
-    />
-  );
+const DrawerContent = React.forwardRef<View, DrawerContentProps>(
+  ({ style, children }, ref) => {
+    const { open, setOpen, direction = 'bottom' } = useDrawer();
+    const slideAnim = React.useRef(new Animated.Value(0)).current;
+
+    React.useEffect(() => {
+      Animated.spring(slideAnim, {
+        toValue: open ? 1 : 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 8,
+      }).start();
+    }, [open, slideAnim]);
+
+    const getTransform = (): any => {
+      switch (direction) {
+        case 'top':
+          return {
+            translateY: slideAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [-SCREEN_HEIGHT * 0.8, 0],
+            }),
+          };
+        case 'bottom':
+          return {
+            translateY: slideAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [SCREEN_HEIGHT * 0.8, 0],
+            }),
+          };
+        case 'left':
+          return {
+            translateX: slideAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [-SCREEN_WIDTH * 0.75, 0],
+            }),
+          };
+        case 'right':
+          return {
+            translateX: slideAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [SCREEN_WIDTH * 0.75, 0],
+            }),
+          };
+        default:
+          return {};
+      }
+    };
+
+    const getContentStyle = () => {
+      const baseStyle = [styles.content, style];
+      switch (direction) {
+        case 'top':
+          return [...baseStyle, styles.contentTop];
+        case 'bottom':
+          return [...baseStyle, styles.contentBottom];
+        case 'left':
+          return [...baseStyle, styles.contentLeft];
+        case 'right':
+          return [...baseStyle, styles.contentRight];
+        default:
+          return baseStyle;
+      }
+    };
+
+    return (
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <View style={styles.modalContainer}>
+          <DrawerOverlay />
+          <Animated.View
+            ref={ref}
+            style={[getContentStyle(), { transform: [getTransform()] }]}
+          >
+            {(direction === 'bottom') && <View style={styles.handle} />}
+            {children}
+          </Animated.View>
+        </View>
+      </Modal>
+    );
+  }
+);
+
+DrawerContent.displayName = 'DrawerContent';
+
+// ============================================================================
+// DrawerHeader
+// ============================================================================
+
+interface DrawerHeaderProps {
+  style?: ViewStyle;
+  children: React.ReactNode;
 }
 
-function DrawerDescription({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Description>) {
-  return (
-    <DrawerPrimitive.Description
-      data-slot="drawer-description"
-      className={cn("text-muted-foreground text-sm", className)}
-      {...props}
-    />
-  );
+const DrawerHeader = React.forwardRef<View, DrawerHeaderProps>(({ style, children }, ref) => (
+  <View ref={ref} style={[styles.header, style]}>
+    {children}
+  </View>
+));
+
+DrawerHeader.displayName = 'DrawerHeader';
+
+// ============================================================================
+// DrawerFooter
+// ============================================================================
+
+interface DrawerFooterProps {
+  style?: ViewStyle;
+  children: React.ReactNode;
 }
+
+const DrawerFooter = React.forwardRef<View, DrawerFooterProps>(({ style, children }, ref) => (
+  <View ref={ref} style={[styles.footer, style]}>
+    {children}
+  </View>
+));
+
+DrawerFooter.displayName = 'DrawerFooter';
+
+// ============================================================================
+// DrawerTitle
+// ============================================================================
+
+interface DrawerTitleProps {
+  style?: TextStyle;
+  children: React.ReactNode;
+}
+
+const DrawerTitle = React.forwardRef<Text, DrawerTitleProps>(({ style, children }, ref) => (
+  <Text ref={ref} style={[styles.title, style]}>
+    {children}
+  </Text>
+));
+
+DrawerTitle.displayName = 'DrawerTitle';
+
+// ============================================================================
+// DrawerDescription
+// ============================================================================
+
+interface DrawerDescriptionProps {
+  style?: TextStyle;
+  children: React.ReactNode;
+}
+
+const DrawerDescription = React.forwardRef<Text, DrawerDescriptionProps>(
+  ({ style, children }, ref) => (
+    <Text ref={ref} style={[styles.description, style]}>
+      {children}
+    </Text>
+  )
+);
+
+DrawerDescription.displayName = 'DrawerDescription';
+
+// ============================================================================
+// Styles
+// ============================================================================
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  content: {
+    backgroundColor: '#fff',
+    maxHeight: SCREEN_HEIGHT * 0.8,
+    position: 'absolute',
+  },
+  contentTop: {
+    top: 0,
+    left: 0,
+    right: 0,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  contentBottom: {
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+  },
+  contentLeft: {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: SCREEN_WIDTH * 0.75,
+    maxWidth: 400,
+    borderRightWidth: 1,
+    borderRightColor: '#e5e7eb',
+  },
+  contentRight: {
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: SCREEN_WIDTH * 0.75,
+    maxWidth: 400,
+    borderLeftWidth: 1,
+    borderLeftColor: '#e5e7eb',
+  },
+  handle: {
+    width: 100,
+    height: 8,
+    backgroundColor: '#d1d5db',
+    borderRadius: 4,
+    alignSelf: 'center',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  header: {
+    padding: 16,
+    gap: 6,
+  },
+  footer: {
+    padding: 16,
+    gap: 8,
+    marginTop: 'auto',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
+  },
+  description: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+});
+
+// ============================================================================
+// Exports
+// ============================================================================
 
 export {
   Drawer,
-  DrawerPortal,
-  DrawerOverlay,
   DrawerTrigger,
   DrawerClose,
+  DrawerOverlay,
   DrawerContent,
   DrawerHeader,
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
 };
+
+

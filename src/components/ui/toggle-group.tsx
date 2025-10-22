@@ -1,73 +1,127 @@
-"use client";
-
 import * as React from "react";
-import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
-import { type VariantProps } from "class-variance-authority";
+import { View, StyleSheet, ViewStyle, ViewProps } from "react-native";
 
-import { cn } from "./utils";
-import { toggleVariants } from "./toggle";
+type ToggleVariant = "default" | "outline";
+type ToggleSize = "default" | "sm" | "lg";
 
-const ToggleGroupContext = React.createContext<
-  VariantProps<typeof toggleVariants>
->({
-  size: "default",
+interface ToggleGroupContextValue {
+  value?: string | string[];
+  onValueChange?: (value: string) => void;
+  type?: "single" | "multiple";
+  variant?: ToggleVariant;
+  size?: ToggleSize;
+}
+
+const ToggleGroupContext = React.createContext<ToggleGroupContextValue>({
   variant: "default",
+  size: "default",
+  type: "single",
 });
 
-function ToggleGroup({
-  className,
-  variant,
-  size,
-  children,
-  ...props
-}: React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
-  VariantProps<typeof toggleVariants>) {
-  return (
-    <ToggleGroupPrimitive.Root
-      data-slot="toggle-group"
-      data-variant={variant}
-      data-size={size}
-      className={cn(
-        "group/toggle-group flex w-fit items-center rounded-md data-[variant=outline]:shadow-xs",
-        className,
-      )}
-      {...props}
-    >
-      <ToggleGroupContext.Provider value={{ variant, size }}>
-        {children}
+interface ToggleGroupProps extends ViewProps {
+  type?: "single" | "multiple";
+  value?: string | string[];
+  onValueChange?: (value: string | string[]) => void;
+  variant?: ToggleVariant;
+  size?: ToggleSize;
+  style?: ViewStyle;
+}
+
+interface ToggleGroupItemProps extends ViewProps {
+  value: string;
+  style?: ViewStyle;
+  children: React.ReactNode;
+}
+
+const ToggleGroup = React.forwardRef<View, ToggleGroupProps>(
+  ({ type = "single", value, onValueChange, variant = "default", size = "default", style, children, ...props }, ref) => {
+    const handleValueChange = (itemValue: string) => {
+      if (type === "single") {
+        onValueChange?.(itemValue);
+      } else {
+        const currentValues = Array.isArray(value) ? value : [];
+        const newValues = currentValues.includes(itemValue)
+          ? currentValues.filter(v => v !== itemValue)
+          : [...currentValues, itemValue];
+        onValueChange?.(newValues);
+      }
+    };
+
+    return (
+      <ToggleGroupContext.Provider value={{ value, onValueChange: handleValueChange, type, variant, size }}>
+        <View ref={ref} style={[styles.group, styles[`variant_${variant}`], style]} {...props}>
+          {children}
+        </View>
       </ToggleGroupContext.Provider>
-    </ToggleGroupPrimitive.Root>
-  );
-}
+    );
+  }
+);
 
-function ToggleGroupItem({
-  className,
-  children,
-  variant,
-  size,
-  ...props
-}: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
-  VariantProps<typeof toggleVariants>) {
-  const context = React.useContext(ToggleGroupContext);
+ToggleGroup.displayName = "ToggleGroup";
 
-  return (
-    <ToggleGroupPrimitive.Item
-      data-slot="toggle-group-item"
-      data-variant={context.variant || variant}
-      data-size={context.size || size}
-      className={cn(
-        toggleVariants({
-          variant: context.variant || variant,
-          size: context.size || size,
-        }),
-        "min-w-0 flex-1 shrink-0 rounded-none shadow-none first:rounded-l-md last:rounded-r-md focus:z-10 focus-visible:z-10 data-[variant=outline]:border-l-0 data-[variant=outline]:first:border-l",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </ToggleGroupPrimitive.Item>
-  );
-}
+const ToggleGroupItem = React.forwardRef<View, ToggleGroupItemProps>(
+  ({ value: itemValue, style, children, ...props }, ref) => {
+    const { value, onValueChange, type, variant, size } = React.useContext(ToggleGroupContext);
+    
+    const isSelected = type === "single" 
+      ? value === itemValue 
+      : Array.isArray(value) && value.includes(itemValue);
+
+    return (
+      <View
+        ref={ref}
+        style={[
+          styles.item,
+          styles[`variant_${variant}`],
+          styles[`size_${size}`],
+          isSelected && styles.selected,
+          style,
+        ]}
+        {...props}
+      >
+        {children}
+      </View>
+    );
+  }
+);
+
+ToggleGroupItem.displayName = "ToggleGroupItem";
+
+const styles = StyleSheet.create({
+  group: {
+    flexDirection: 'row',
+    borderRadius: 6,
+  },
+  variant_default: {
+    backgroundColor: 'transparent',
+  },
+  variant_outline: {
+    backgroundColor: '#f9fafb',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  item: {
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  size_default: {
+    height: 36,
+  },
+  size_sm: {
+    height: 32,
+  },
+  size_lg: {
+    height: 40,
+  },
+  selected: {
+    backgroundColor: '#f3f4f6',
+  },
+});
 
 export { ToggleGroup, ToggleGroupItem };

@@ -1,168 +1,465 @@
-import * as React from "react";
-import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
-import { cva } from "class-variance-authority";
-import { ChevronDownIcon } from "lucide-react";
+import * as React from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Animated,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { cn } from "./utils";
+// ============================================================================
+// Context
+// ============================================================================
 
-function NavigationMenu({
-  className,
-  children,
-  viewport = true,
-  ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Root> & {
-  viewport?: boolean;
-}) {
-  return (
-    <NavigationMenuPrimitive.Root
-      data-slot="navigation-menu"
-      data-viewport={viewport}
-      className={cn(
-        "group/navigation-menu relative flex max-w-max flex-1 items-center justify-center",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-      {viewport && <NavigationMenuViewport />}
-    </NavigationMenuPrimitive.Root>
-  );
+interface NavigationMenuContextValue {
+  activeId: string | null;
+  setActiveId: (id: string | null) => void;
+  viewport: boolean;
 }
 
-function NavigationMenuList({
-  className,
-  ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.List>) {
-  return (
-    <NavigationMenuPrimitive.List
-      data-slot="navigation-menu-list"
-      className={cn(
-        "group flex flex-1 list-none items-center justify-center gap-1",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-function NavigationMenuItem({
-  className,
-  ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Item>) {
-  return (
-    <NavigationMenuPrimitive.Item
-      data-slot="navigation-menu-item"
-      className={cn("relative", className)}
-      {...props}
-    />
-  );
-}
-
-const navigationMenuTriggerStyle = cva(
-  "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-accent data-[state=open]:bg-accent/50 focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1",
+const NavigationMenuContext = React.createContext<NavigationMenuContextValue | undefined>(
+  undefined
 );
 
-function NavigationMenuTrigger({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Trigger>) {
-  return (
-    <NavigationMenuPrimitive.Trigger
-      data-slot="navigation-menu-trigger"
-      className={cn(navigationMenuTriggerStyle(), "group", className)}
-      {...props}
-    >
-      {children}{" "}
-      <ChevronDownIcon
-        className="relative top-[1px] ml-1 size-3 transition duration-300 group-data-[state=open]:rotate-180"
-        aria-hidden="true"
-      />
-    </NavigationMenuPrimitive.Trigger>
-  );
+const useNavigationMenu = () => {
+  const context = React.useContext(NavigationMenuContext);
+  if (!context) {
+    throw new Error('NavigationMenu components must be used within a NavigationMenu');
+  }
+  return context;
+};
+
+interface NavigationMenuItemContextValue {
+  itemId: string;
+  isActive: boolean;
+  setActive: (active: boolean) => void;
 }
 
-function NavigationMenuContent({
-  className,
-  ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Content>) {
-  return (
-    <NavigationMenuPrimitive.Content
-      data-slot="navigation-menu-content"
-      className={cn(
-        "data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 top-0 left-0 w-full p-2 pr-2.5 md:absolute md:w-auto",
-        "group-data-[viewport=false]/navigation-menu:bg-popover group-data-[viewport=false]/navigation-menu:text-popover-foreground group-data-[viewport=false]/navigation-menu:data-[state=open]:animate-in group-data-[viewport=false]/navigation-menu:data-[state=closed]:animate-out group-data-[viewport=false]/navigation-menu:data-[state=closed]:zoom-out-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:zoom-in-95 group-data-[viewport=false]/navigation-menu:data-[state=open]:fade-in-0 group-data-[viewport=false]/navigation-menu:data-[state=closed]:fade-out-0 group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-1.5 group-data-[viewport=false]/navigation-menu:overflow-hidden group-data-[viewport=false]/navigation-menu:rounded-md group-data-[viewport=false]/navigation-menu:border group-data-[viewport=false]/navigation-menu:shadow group-data-[viewport=false]/navigation-menu:duration-200 **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none",
-        className,
-      )}
-      {...props}
-    />
-  );
+const NavigationMenuItemContext = React.createContext<
+  NavigationMenuItemContextValue | undefined
+>(undefined);
+
+const useNavigationMenuItem = () => {
+  const context = React.useContext(NavigationMenuItemContext);
+  if (!context) {
+    throw new Error('NavigationMenuItem components must be used within a NavigationMenuItem');
+  }
+  return context;
+};
+
+// ============================================================================
+// NavigationMenu (Root)
+// ============================================================================
+
+interface NavigationMenuProps {
+  viewport?: boolean;
+  style?: ViewStyle;
+  children: React.ReactNode;
 }
 
-function NavigationMenuViewport({
-  className,
-  ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
-  return (
-    <div
-      className={cn(
-        "absolute top-full left-0 isolate z-50 flex justify-center",
-      )}
-    >
-      <NavigationMenuPrimitive.Viewport
-        data-slot="navigation-menu-viewport"
-        className={cn(
-          "origin-top-center bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow md:w-[var(--radix-navigation-menu-viewport-width)]",
-          className,
+const NavigationMenu = React.forwardRef<View, NavigationMenuProps>(
+  ({ viewport = true, style, children }, ref) => {
+    const [activeId, setActiveId] = React.useState<string | null>(null);
+
+    const contextValue: NavigationMenuContextValue = React.useMemo(
+      () => ({ activeId, setActiveId, viewport }),
+      [activeId, viewport]
+    );
+
+    return (
+      <NavigationMenuContext.Provider value={contextValue}>
+        <View ref={ref} style={[styles.root, style]}>
+          {children}
+        </View>
+      </NavigationMenuContext.Provider>
+    );
+  }
+);
+
+NavigationMenu.displayName = 'NavigationMenu';
+
+// ============================================================================
+// NavigationMenuList
+// ============================================================================
+
+interface NavigationMenuListProps {
+  style?: ViewStyle;
+  children: React.ReactNode;
+}
+
+const NavigationMenuList = React.forwardRef<View, NavigationMenuListProps>(
+  ({ style, children }, ref) => (
+    <View ref={ref} style={[styles.list, style]}>
+      {children}
+    </View>
+  )
+);
+
+NavigationMenuList.displayName = 'NavigationMenuList';
+
+// ============================================================================
+// NavigationMenuItem
+// ============================================================================
+
+interface NavigationMenuItemProps {
+  style?: ViewStyle;
+  children: React.ReactNode;
+}
+
+const NavigationMenuItem = React.forwardRef<View, NavigationMenuItemProps>(
+  ({ style, children }, ref) => {
+    const itemId = React.useId();
+    const { activeId, setActiveId } = useNavigationMenu();
+
+    const isActive = activeId === itemId;
+    const setActive = React.useCallback(
+      (active: boolean) => {
+        setActiveId(active ? itemId : null);
+      },
+      [itemId, setActiveId]
+    );
+
+    const contextValue: NavigationMenuItemContextValue = React.useMemo(
+      () => ({ itemId, isActive, setActive }),
+      [itemId, isActive, setActive]
+    );
+
+    return (
+      <NavigationMenuItemContext.Provider value={contextValue}>
+        <View ref={ref} style={[styles.item, style]}>
+          {children}
+        </View>
+      </NavigationMenuItemContext.Provider>
+    );
+  }
+);
+
+NavigationMenuItem.displayName = 'NavigationMenuItem';
+
+// ============================================================================
+// NavigationMenuTrigger
+// ============================================================================
+
+interface NavigationMenuTriggerProps {
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+  children: React.ReactNode;
+}
+
+const NavigationMenuTrigger = React.forwardRef<View, NavigationMenuTriggerProps>(
+  ({ style, textStyle, children }, ref) => {
+    const { isActive, setActive } = useNavigationMenuItem();
+    const rotateAnim = React.useRef(new Animated.Value(isActive ? 1 : 0)).current;
+
+    React.useEffect(() => {
+      Animated.timing(rotateAnim, {
+        toValue: isActive ? 1 : 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }, [isActive, rotateAnim]);
+
+    const rotation = rotateAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['0deg', '180deg'],
+    });
+
+    return (
+      <TouchableOpacity
+        onPress={() => setActive(!isActive)}
+        style={[styles.trigger, isActive && styles.triggerActive, style]}
+      >
+        {typeof children === 'string' ? (
+          <Text style={[styles.triggerText, textStyle]}>{children}</Text>
+        ) : (
+          children
         )}
-        {...props}
-      />
-    </div>
-  );
+        <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+          <Icon name="keyboard-arrow-down" size={16} color="#666" />
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  }
+);
+
+NavigationMenuTrigger.displayName = 'NavigationMenuTrigger';
+
+// ============================================================================
+// NavigationMenuContent
+// ============================================================================
+
+interface NavigationMenuContentProps {
+  style?: ViewStyle;
+  children: React.ReactNode;
 }
 
-function NavigationMenuLink({
-  className,
-  ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Link>) {
-  return (
-    <NavigationMenuPrimitive.Link
-      data-slot="navigation-menu-link"
-      className={cn(
-        "data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
-        className,
-      )}
-      {...props}
-    />
-  );
+const NavigationMenuContent = React.forwardRef<View, NavigationMenuContentProps>(
+  ({ style, children }, ref) => {
+    const { isActive } = useNavigationMenuItem();
+    const fadeAnim = React.useRef(new Animated.Value(0)).current;
+
+    React.useEffect(() => {
+      Animated.timing(fadeAnim, {
+        toValue: isActive ? 1 : 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }, [isActive, fadeAnim]);
+
+    if (!isActive) return null;
+
+    return (
+      <Animated.View ref={ref} style={[styles.content, { opacity: fadeAnim }, style]}>
+        {children}
+      </Animated.View>
+    );
+  }
+);
+
+NavigationMenuContent.displayName = 'NavigationMenuContent';
+
+// ============================================================================
+// NavigationMenuLink
+// ============================================================================
+
+interface NavigationMenuLinkProps {
+  onPress?: () => void;
+  active?: boolean;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+  children: React.ReactNode;
 }
 
-function NavigationMenuIndicator({
-  className,
-  ...props
-}: React.ComponentProps<typeof NavigationMenuPrimitive.Indicator>) {
-  return (
-    <NavigationMenuPrimitive.Indicator
-      data-slot="navigation-menu-indicator"
-      className={cn(
-        "data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden",
-        className,
-      )}
-      {...props}
+const NavigationMenuLink = React.forwardRef<View, NavigationMenuLinkProps>(
+  ({ onPress, active, style, textStyle, children }, ref) => (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.link, active && styles.linkActive, style]}
     >
-      <div className="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md" />
-    </NavigationMenuPrimitive.Indicator>
-  );
+      {typeof children === 'string' ? (
+        <Text style={[styles.linkText, active && styles.linkTextActive, textStyle]}>
+          {children}
+        </Text>
+      ) : (
+        children
+      )}
+    </TouchableOpacity>
+  )
+);
+
+NavigationMenuLink.displayName = 'NavigationMenuLink';
+
+// ============================================================================
+// NavigationMenuViewport
+// ============================================================================
+
+interface NavigationMenuViewportProps {
+  style?: ViewStyle;
 }
+
+const NavigationMenuViewport = React.forwardRef<View, NavigationMenuViewportProps>(
+  ({ style }, ref) => {
+    const { activeId } = useNavigationMenu();
+    const scaleAnim = React.useRef(new Animated.Value(0)).current;
+
+    React.useEffect(() => {
+      Animated.spring(scaleAnim, {
+        toValue: activeId ? 1 : 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 8,
+      }).start();
+    }, [activeId, scaleAnim]);
+
+    if (!activeId) return null;
+
+    return (
+      <Animated.View
+        ref={ref}
+        style={[
+          styles.viewport,
+          {
+            transform: [{ scale: scaleAnim }],
+            opacity: scaleAnim,
+          },
+          style,
+        ]}
+      />
+    );
+  }
+);
+
+NavigationMenuViewport.displayName = 'NavigationMenuViewport';
+
+// ============================================================================
+// NavigationMenuIndicator
+// ============================================================================
+
+interface NavigationMenuIndicatorProps {
+  style?: ViewStyle;
+}
+
+const NavigationMenuIndicator = React.forwardRef<View, NavigationMenuIndicatorProps>(
+  ({ style }, ref) => {
+    const { isActive } = useNavigationMenuItem();
+    const fadeAnim = React.useRef(new Animated.Value(0)).current;
+
+    React.useEffect(() => {
+      Animated.timing(fadeAnim, {
+        toValue: isActive ? 1 : 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }, [isActive, fadeAnim]);
+
+    if (!isActive) return null;
+
+    return (
+      <Animated.View ref={ref} style={[styles.indicator, { opacity: fadeAnim }, style]}>
+        <View style={styles.indicatorArrow} />
+      </Animated.View>
+    );
+  }
+);
+
+NavigationMenuIndicator.displayName = 'NavigationMenuIndicator';
+
+// ============================================================================
+// navigationMenuTriggerStyle (utility)
+// ============================================================================
+
+const navigationMenuTriggerStyle = (): ViewStyle => styles.trigger;
+
+// ============================================================================
+// Styles
+// ============================================================================
+
+const styles = StyleSheet.create({
+  root: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxWidth: '100%',
+    position: 'relative',
+  },
+  list: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  item: {
+    position: 'relative',
+  },
+  trigger: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+    borderRadius: 6,
+    height: 36,
+  },
+  triggerActive: {
+    backgroundColor: '#f3f4f6',
+  },
+  triggerText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#000',
+    marginRight: 4,
+  },
+  content: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    marginTop: 6,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    padding: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  link: {
+    flexDirection: 'column',
+    gap: 4,
+    padding: 8,
+    borderRadius: 4,
+  },
+  linkActive: {
+    backgroundColor: '#f3f4f6',
+  },
+  linkText: {
+    fontSize: 14,
+    color: '#000',
+  },
+  linkTextActive: {
+    color: '#3b82f6',
+  },
+  viewport: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    marginTop: 6,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  indicator: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 6,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
+  },
+  indicatorArrow: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#e5e7eb',
+    transform: [{ rotate: '45deg' }],
+    borderRadius: 2,
+    marginBottom: -4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+});
+
+// ============================================================================
+// Exports
+// ============================================================================
 
 export {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
-  NavigationMenuContent,
   NavigationMenuTrigger,
+  NavigationMenuContent,
   NavigationMenuLink,
-  NavigationMenuIndicator,
   NavigationMenuViewport,
+  NavigationMenuIndicator,
   navigationMenuTriggerStyle,
 };
+

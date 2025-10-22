@@ -1,31 +1,43 @@
-"use client";
-
 import * as React from "react";
-import * as SwitchPrimitive from "@radix-ui/react-switch";
+import {
+  Switch as RNSwitch,
+  SwitchProps as RNSwitchProps,
+  StyleSheet,
+  ViewStyle,
+} from "react-native";
 
-import { cn } from "./utils";
-
-function Switch({
-  className,
-  ...props
-}: React.ComponentProps<typeof SwitchPrimitive.Root>) {
-  return (
-    <SwitchPrimitive.Root
-      data-slot="switch"
-      className={cn(
-        "peer data-[state=checked]:bg-primary data-[state=unchecked]:bg-switch-background focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
-        className,
-      )}
-      {...props}
-    >
-      <SwitchPrimitive.Thumb
-        data-slot="switch-thumb"
-        className={cn(
-          "bg-card dark:data-[state=unchecked]:bg-card-foreground dark:data-[state=checked]:bg-primary-foreground pointer-events-none block size-4 rounded-full ring-0 transition-transform data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0",
-        )}
-      />
-    </SwitchPrimitive.Root>
-  );
+interface SwitchProps extends Omit<RNSwitchProps, 'style'> {
+  style?: ViewStyle;
 }
+
+const Switch = React.forwardRef<RNSwitch, SwitchProps>(
+  ({ style, disabled, ...props }, ref) => {
+    return (
+      <RNSwitch
+        ref={ref}
+        trackColor={{
+          false: '#e5e7eb', // Light gray for unchecked
+          true: '#3b82f6',  // Blue for checked
+        }}
+        thumbColor={props.value ? '#ffffff' : '#ffffff'}
+        ios_backgroundColor="#e5e7eb"
+        disabled={disabled}
+        style={[styles.switch, disabled && styles.disabled, style]}
+        {...props}
+      />
+    );
+  }
+);
+
+Switch.displayName = "Switch";
+
+const styles = StyleSheet.create({
+  switch: {
+    transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }],
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+});
 
 export { Switch };

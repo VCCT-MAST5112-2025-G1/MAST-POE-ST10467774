@@ -1,47 +1,110 @@
-"use client";
-
 import * as React from "react";
-import * as TogglePrimitive from "@radix-ui/react-toggle";
-import { cva, type VariantProps } from "class-variance-authority";
+import { TouchableOpacity, View, Text, StyleSheet, ViewStyle, TextStyle, TouchableOpacityProps } from "react-native";
 
-import { cn } from "./utils";
+type ToggleVariant = "default" | "outline";
+type ToggleSize = "default" | "sm" | "lg";
 
-const toggleVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium hover:bg-muted hover:text-muted-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none transition-[color,box-shadow] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap",
-  {
-    variants: {
-      variant: {
-        default: "bg-transparent",
-        outline:
-          "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
-      },
-      size: {
-        default: "h-9 px-2 min-w-9",
-        sm: "h-8 px-1.5 min-w-8",
-        lg: "h-10 px-2.5 min-w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  },
-);
-
-function Toggle({
-  className,
-  variant,
-  size,
-  ...props
-}: React.ComponentProps<typeof TogglePrimitive.Root> &
-  VariantProps<typeof toggleVariants>) {
-  return (
-    <TogglePrimitive.Root
-      data-slot="toggle"
-      className={cn(toggleVariants({ variant, size, className }))}
-      {...props}
-    />
-  );
+interface ToggleProps extends Omit<TouchableOpacityProps, 'onPress'> {
+  pressed?: boolean;
+  onPressedChange?: (pressed: boolean) => void;
+  variant?: ToggleVariant;
+  size?: ToggleSize;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
-export { Toggle, toggleVariants };
+const Toggle = React.forwardRef<View, ToggleProps>(
+  ({ 
+    pressed = false, 
+    onPressedChange, 
+    variant = "default", 
+    size = "default",
+    disabled = false,
+    style, 
+    textStyle,
+    children,
+    ...props 
+  }, ref) => {
+    const handlePress = () => {
+      if (!disabled && onPressedChange) {
+        onPressedChange(!pressed);
+      }
+    };
+
+    return (
+      <TouchableOpacity
+        ref={ref}
+        onPress={handlePress}
+        disabled={disabled}
+        style={[
+          styles.toggle,
+          styles[`variant_${variant}`],
+          styles[`size_${size}`],
+          pressed && styles.pressed,
+          pressed && styles[`pressed_${variant}`],
+          disabled && styles.disabled,
+          style,
+        ]}
+        {...props}
+      >
+        {typeof children === 'string' ? (
+          <Text style={[styles.text, textStyle]}>{children}</Text>
+        ) : (
+          children
+        )}
+      </TouchableOpacity>
+    );
+  }
+);
+
+Toggle.displayName = "Toggle";
+
+const styles = StyleSheet.create({
+  toggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+    gap: 8,
+  },
+  variant_default: {
+    backgroundColor: 'transparent',
+  },
+  variant_outline: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  size_default: {
+    height: 36,
+    paddingHorizontal: 8,
+    minWidth: 36,
+  },
+  size_sm: {
+    height: 32,
+    paddingHorizontal: 6,
+    minWidth: 32,
+  },
+  size_lg: {
+    height: 40,
+    paddingHorizontal: 10,
+    minWidth: 40,
+  },
+  pressed: {},
+  pressed_default: {
+    backgroundColor: '#f3f4f6',
+  },
+  pressed_outline: {
+    backgroundColor: '#f3f4f6',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  text: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#111827',
+  },
+});
+
+export { Toggle };

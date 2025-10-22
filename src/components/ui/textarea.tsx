@@ -1,18 +1,50 @@
 import * as React from "react";
+import { TextInput, StyleSheet, TextStyle, TextInputProps } from "react-native";
 
-import { cn } from "./utils";
-
-function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
-  return (
-    <textarea
-      data-slot="textarea"
-      className={cn(
-        "resize-none border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-input-background px-3 py-2 text-base transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        className,
-      )}
-      {...props}
-    />
-  );
+interface TextareaProps extends TextInputProps {
+  style?: TextStyle;
+  error?: boolean;
 }
+
+const Textarea = React.forwardRef<TextInput, TextareaProps>(
+  ({ style, error, ...props }, ref) => {
+    return (
+      <TextInput
+        ref={ref}
+        multiline
+        numberOfLines={4}
+        textAlignVertical="top"
+        placeholderTextColor="#9ca3af"
+        style={[
+          styles.textarea,
+          error && styles.error,
+          style,
+        ]}
+        {...props}
+      />
+    );
+  }
+);
+
+Textarea.displayName = "Textarea";
+
+const styles = StyleSheet.create({
+  textarea: {
+    minHeight: 80,
+    width: '100%',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    backgroundColor: '#f9fafb',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#111827',
+  },
+  error: {
+    borderColor: '#ef4444',
+  },
+});
 
 export { Textarea };

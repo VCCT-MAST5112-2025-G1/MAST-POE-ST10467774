@@ -24,21 +24,23 @@ interface MenuItem {
 }
 
 const ImageWithFallback = ({ src, alt, style, ...props }: any) => {
+  const [failed, setFailed] = React.useState(false);
+
   const placeholder =
     'data:image/svg+xml;utf8,' +
     encodeURIComponent(
       `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="24">Image not available</text></svg>`
     );
 
+  const uri = !src || failed ? placeholder : src;
+
   return (
     <Image
-      source={{ uri: src || placeholder }}
+      source={{ uri }}
       style={style}
-      onError={(e) => {
-        const t = e.nativeEvent.source as any;
-        if (t.uri !== placeholder) {
-          t.uri = placeholder;
-        }
+      accessibilityLabel={alt}
+      onError={() => {
+        setFailed(true);
       }}
       {...props}
     />
