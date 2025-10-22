@@ -455,19 +455,9 @@ This project uses open-source software licensed under various licenses including
 
 ---
 
-## Additional Notes
 
-### Code Attribution
-All custom code was written specifically for this project. Third-party libraries and frameworks are used as documented in the `package.json` file and are properly attributed above.
 
-### Design Inspiration
-- Material Design Guidelines for Android: https://material.io/
-- Human Interface Guidelines for iOS: https://developer.apple.com/design/human-interface-guidelines/
 
-### Future References
-For updates and additional resources, please refer to the official React Native changelog and Expo release notes:
-- React Native Releases: https://github.com/facebook/react-native/releases
-- Expo SDK Releases: https://docs.expo.dev/versions/latest/
 
 
   
