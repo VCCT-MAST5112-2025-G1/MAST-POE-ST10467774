@@ -468,7 +468,6 @@ If updating from v1.x:
     https://reactnative.dev/docs/flatlist  
     Accessed: October 2025
 ### Design & Styling
-
 *  **React Native StyleSheet**  
     StyleSheet · React Native  
     https://reactnative.dev/docs/stylesheet  
