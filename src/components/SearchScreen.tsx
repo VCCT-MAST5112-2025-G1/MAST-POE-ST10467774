@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, TextInput } from 'react-native';
 import { useThemeContext } from '../../styles/ThemeContext';
 import { colors } from '../../styles/colors';
 import Icon from 'react-native-vector-icons/Feather';
@@ -21,14 +21,15 @@ const ImageWithFallback = ({ src, alt, style, ...props }: any) => {
       `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="100%" height="100%" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="24">Image not available</text></svg>`
     );
 
+  const [currentSrc, setCurrentSrc] = React.useState(src || placeholder);
+
   return (
     <Image
-      source={{ uri: src || placeholder }}
+      source={{ uri: currentSrc }}
       style={style}
-      onError={(e) => {
-        const t = e.nativeEvent.source as any;
-        if (t.uri !== placeholder) {
-          t.uri = placeholder;
+      onError={() => {
+        if (currentSrc !== placeholder) {
+          setCurrentSrc(placeholder);
         }
       }}
       {...props}
@@ -83,62 +84,65 @@ export function SearchScreen({ menuItems, favorites, onViewDetails, onToggleFavo
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Icon name="search" size={28} color={colors[colorScheme].text} />
-        <View>
-          <Text style={styles.headerTitle}>Search Menu</Text>
-          <Text style={styles.headerSubtitle}>Find your perfect dish</Text>
-        </View>
-      </View>
-
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Icon name="search" size={20} color={colors[colorScheme].primary} style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search dishes, courses..."
-            placeholderTextColor={colors[colorScheme].text}
-          />
-          {searchQuery ? (
-            <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearIcon}>
-              <Icon name="x" size={16} color={colors[colorScheme].text} />
-            </TouchableOpacity>
-          ) : null}
-        </View>
-        {searchQuery && (
-          <Text style={styles.resultsText}>
-            {filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''} found
-          </Text>
-        )}
-      </View>
-
-      <View style={styles.content}>
-        {!searchQuery ? (
-          <View style={styles.emptyContainer}>
-            <Icon name="search" size={64} color={colors[colorScheme].primary} />
-            <Text style={styles.emptyText}>Start searching</Text>
-            <Text style={styles.emptySubtitle}>Search by dish name, description, or course</Text>
+    <FlatList
+      style={styles.container}
+      data={filteredItems}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      numColumns={2}
+      columnWrapperStyle={filteredItems.length > 0 ? { justifyContent: 'space-between' } : undefined}
+      ListHeaderComponent={
+        <>
+          <View style={styles.header}>
+            <Icon name="search" size={28} color={colors[colorScheme].text} />
+            <View>
+              <Text style={styles.headerTitle}>Search Menu</Text>
+              <Text style={styles.headerSubtitle}>Find your perfect dish</Text>
+            </View>
           </View>
-        ) : filteredItems.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Icon name="search" size={64} color={colors[colorScheme].border} />
-            <Text style={styles.emptyText}>No results found</Text>
-            <Text style={styles.emptySubtitle}>Try a different search term</Text>
+
+          <View style={styles.searchContainer}>
+            <View style={styles.searchInputContainer}>
+              <Icon name="search" size={20} color={colors[colorScheme].primary} style={styles.searchIcon} />
+              <TextInput
+                style={styles.searchInput}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search dishes, courses..."
+                placeholderTextColor={colors[colorScheme].text}
+              />
+              {searchQuery ? (
+                <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearIcon}>
+                  <Icon name="x" size={16} color={colors[colorScheme].text} />
+                </TouchableOpacity>
+              ) : null}
+            </View>
+            {searchQuery && (
+              <Text style={styles.resultsText}>
+                {filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''} found
+              </Text>
+            )}
           </View>
-        ) : (
-          <FlatList
-            data={filteredItems}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-            columnWrapperStyle={{ justifyContent: 'space-between' }}
-          />
-        )}
-      </View>
-    </ScrollView>
+        </>
+      }
+      ListEmptyComponent={
+        <View style={styles.content}>
+          {!searchQuery ? (
+            <View style={styles.emptyContainer}>
+              <Icon name="search" size={64} color={colors[colorScheme].primary} />
+              <Text style={styles.emptyText}>Start searching</Text>
+              <Text style={styles.emptySubtitle}>Search by dish name, description, or course</Text>
+            </View>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Icon name="search" size={64} color={colors[colorScheme].border} />
+              <Text style={styles.emptyText}>No results found</Text>
+              <Text style={styles.emptySubtitle}>Try a different search term</Text>
+            </View>
+          )}
+        </View>
+      }
+    />
   );
 }
 

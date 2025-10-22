@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
 import { useThemeContext } from '../../styles/ThemeContext';
 import { colors } from '../../styles/colors';
 import Icon from 'react-native-vector-icons/Feather';
@@ -79,33 +79,32 @@ export function FavoritesScreen({ menuItems, favorites, onViewDetails, onToggleF
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Icon name="heart" size={28} color={colors[colorScheme].text} />
-        <View>
-          <Text style={styles.headerTitle}>Favorites</Text>
-          <Text style={styles.headerSubtitle}>{menuItems.length} saved item{menuItems.length !== 1 ? 's' : ''}</Text>
+    <FlatList
+      style={styles.container}
+      data={menuItems}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      numColumns={2}
+      columnWrapperStyle={menuItems.length > 0 ? { justifyContent: 'space-between' } : undefined}
+      ListHeaderComponent={
+        <View style={styles.header}>
+          <Icon name="heart" size={28} color={colors[colorScheme].text} />
+          <View>
+            <Text style={styles.headerTitle}>Favorites</Text>
+            <Text style={styles.headerSubtitle}>{menuItems.length} saved item{menuItems.length !== 1 ? 's' : ''}</Text>
+          </View>
         </View>
-      </View>
-
-      <View style={styles.content}>
-        {menuItems.length === 0 ? (
+      }
+      ListEmptyComponent={
+        <View style={styles.content}>
           <View style={styles.emptyContainer}>
             <Icon name="heart" size={64} color={colors[colorScheme].primary} />
             <Text style={styles.emptyText}>No favorites yet</Text>
             <Text style={styles.emptySubtitle}>Tap the heart icon on any dish to save it here</Text>
           </View>
-        ) : (
-          <FlatList
-            data={menuItems}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-            columnWrapperStyle={{ justifyContent: 'space-between' }}
-          />
-        )}
-      </View>
-    </ScrollView>
+        </View>
+      }
+    />
   );
 }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
 import { useThemeContext } from '../../styles/ThemeContext';
 import { colors } from '../../styles/colors';
 import Icon from 'react-native-vector-icons/Feather';
@@ -80,67 +80,68 @@ export function HomeScreen({ menuItems, favorites, onAddNew, onViewDetails, onTo
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Icon name="coffee" size={28} color={colors[colorScheme].text} />
-          <View>
-            <Text style={styles.headerTitle}>Chef Christoffel</Text>
-            <Text style={styles.headerSubtitle}>Private Dining Experiences</Text>
-          </View>
-        </View>
-        <TouchableOpacity onPress={onFilter}>
-          <Icon name="sliders" size={20} color={colors[colorScheme].text} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Text style={styles.statLabel}>Total Dishes</Text>
-          <Text style={styles.statValue}>{menuItems.length}</Text>
-        </View>
-        <View style={styles.statCard}>
-          <View style={styles.statLabelContainer}>
-            <Icon name="trending-up" size={16} color={colors[colorScheme].primary} />
-            <Text style={styles.statLabel}>Avg. Price</Text>
-          </View>
-          <Text style={styles.statValue}>R{averagePrice.toFixed(0)}</Text>
-        </View>
-      </View>
-
-      <View style={styles.menuSection}>
-        <View style={styles.menuHeader}>
-          <View>
-            <Text style={styles.menuTitle}>Featured Menu</Text>
-            <Text style={styles.menuSubtitle}>Curated dining experiences</Text>
-          </View>
-          <TouchableOpacity style={styles.addButton} onPress={onAddNew}>
-            <Icon name="plus" size={16} color={colors.dark.text} />
-            <Text style={styles.addButtonText}>Add</Text>
-          </TouchableOpacity>
-        </View>
-
-        {featuredItems.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Icon name="coffee" size={64} color={colors[colorScheme].primary} />
-            <Text style={styles.emptyText}>No menu items yet</Text>
-            <Text style={styles.emptySubtitle}>Start building your menu by adding items</Text>
-            <TouchableOpacity style={styles.addButton} onPress={onAddNew}>
-              <Icon name="plus" size={16} color={colors.dark.text} />
-              <Text style={styles.addButtonText}>Add Menu Item</Text>
+    <FlatList
+      style={styles.container}
+      data={featuredItems}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      numColumns={2}
+      columnWrapperStyle={{ justifyContent: 'space-between' }}
+      ListHeaderComponent={
+        <>
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <Icon name="coffee" size={28} color={colors[colorScheme].text} />
+              <View>
+                <Text style={styles.headerTitle}>Chef Christoffel</Text>
+                <Text style={styles.headerSubtitle}>Private Dining Experiences</Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={onFilter}>
+              <Icon name="sliders" size={20} color={colors[colorScheme].text} />
             </TouchableOpacity>
           </View>
-        ) : (
-          <FlatList
-            data={featuredItems}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-            columnWrapperStyle={{ justifyContent: 'space-between' }}
-          />
-        )}
-      </View>
-    </ScrollView>
+
+          <View style={styles.statsContainer}>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Total Dishes</Text>
+              <Text style={styles.statValue}>{menuItems.length}</Text>
+            </View>
+            <View style={styles.statCard}>
+              <View style={styles.statLabelContainer}>
+                <Icon name="trending-up" size={16} color={colors[colorScheme].primary} />
+                <Text style={styles.statLabel}>Avg. Price</Text>
+              </View>
+              <Text style={styles.statValue}>R{averagePrice.toFixed(0)}</Text>
+            </View>
+          </View>
+
+          <View style={styles.menuSection}>
+            <View style={styles.menuHeader}>
+              <View>
+                <Text style={styles.menuTitle}>Featured Menu</Text>
+                <Text style={styles.menuSubtitle}>Curated dining experiences</Text>
+              </View>
+              <TouchableOpacity style={styles.addButton} onPress={onAddNew}>
+                <Icon name="plus" size={16} color={colors.dark.text} />
+                <Text style={styles.addButtonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      }
+      ListEmptyComponent={
+        <View style={styles.emptyContainer}>
+          <Icon name="coffee" size={64} color={colors[colorScheme].primary} />
+          <Text style={styles.emptyText}>No menu items yet</Text>
+          <Text style={styles.emptySubtitle}>Start building your menu by adding items</Text>
+          <TouchableOpacity style={styles.addButton} onPress={onAddNew}>
+            <Icon name="plus" size={16} color={colors.dark.text} />
+            <Text style={styles.addButtonText}>Add Menu Item</Text>
+          </TouchableOpacity>
+        </View>
+      }
+    />
   );
 }
 

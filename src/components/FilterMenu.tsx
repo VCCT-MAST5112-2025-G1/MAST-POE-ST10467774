@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { useThemeContext } from '../../styles/ThemeContext';
 import { colors } from '../../styles/colors';
 import Icon from 'react-native-vector-icons/Feather';
@@ -64,78 +64,81 @@ export function FilterMenu({ menuItems, favorites, onBack, onViewDetails, onTogg
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Icon name="arrow-left" size={24} color={colors[colorScheme].text} />
-        </TouchableOpacity>
-        <Icon name="sliders" size={28} color={colors[colorScheme].text} />
-        <View>
-          <Text style={styles.headerTitle}>Filter Menu</Text>
-          <Text style={styles.headerSubtitle}>{filteredItems.length} items found</Text>
-        </View>
-      </View>
-      <TouchableOpacity onPress={clearFilters} style={styles.clearButton}>
-        <Text style={styles.clearButtonText}>Clear All Filters</Text>
-      </TouchableOpacity>
-
-      <View style={styles.content}>
-        <View style={styles.filterCard}>
-          <Text style={styles.filterTitle}>Course Type</Text>
-          <View style={styles.badgeContainer}>
-            {courses.map((course) => (
-              <TouchableOpacity key={course} onPress={() => setSelectedCourse(course)} style={[styles.badge, selectedCourse === course && styles.activeBadge]}>
-                <Text style={selectedCourse === course ? styles.activeBadgeText : styles.badgeText}>{course}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.filterCard}>
-          <Text style={styles.filterTitle}>Price Range</Text>
-          {/* Slider component needs to be implemented or replaced */}
-          <View style={styles.priceRangeContainer}>
-            <Text style={styles.priceText}>R{priceRange[0]}</Text>
-            <Text style={styles.priceText}>to</Text>
-            <Text style={styles.priceText}>R{priceRange[1]}</Text>
-          </View>
-        </View>
-
-        <View style={styles.filterCard}>
-          <Text style={styles.filterTitle}>Exclude Allergens</Text>
-          <View style={styles.badgeContainer}>
-            {allergens.map((allergen) => (
-              <TouchableOpacity key={allergen} onPress={() => toggleAllergen(allergen)} style={[styles.badge, selectedAllergens.includes(allergen) && styles.activeAllergenBadge]}>
-                <Text style={selectedAllergens.includes(allergen) ? styles.activeBadgeText : styles.allergenBadgeText}>{allergen}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          {selectedAllergens.length > 0 && (
-            <Text style={styles.infoText}>Excluding items with: {selectedAllergens.join(', ')}</Text>
-          )}
-        </View>
-
-        <View>
-          <Text style={styles.resultsTitle}>Filtered Results ({filteredItems.length})</Text>
-          {filteredItems.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No items match your filters</Text>
-              <TouchableOpacity onPress={clearFilters} style={styles.clearButtonAlt}>
-                <Text style={styles.clearButtonAltText}>Clear Filters</Text>
-              </TouchableOpacity>
+    <FlatList
+      style={styles.container}
+      data={filteredItems}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      numColumns={2}
+      columnWrapperStyle={filteredItems.length > 0 ? { justifyContent: 'space-between' } : undefined}
+      ListHeaderComponent={
+        <>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onBack} style={styles.backButton}>
+              <Icon name="arrow-left" size={24} color={colors[colorScheme].text} />
+            </TouchableOpacity>
+            <Icon name="sliders" size={28} color={colors[colorScheme].text} />
+            <View>
+              <Text style={styles.headerTitle}>Filter Menu</Text>
+              <Text style={styles.headerSubtitle}>{filteredItems.length} items found</Text>
             </View>
-          ) : (
-            <FlatList
-              data={filteredItems}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-              numColumns={2}
-              columnWrapperStyle={{ justifyContent: 'space-between' }}
-            />
-          )}
+          </View>
+
+          <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
+            <Text style={styles.clearButtonText}>Clear All Filters</Text>
+          </TouchableOpacity>
+
+          <View style={styles.content}>
+            <View style={styles.filterCard}>
+              <Text style={styles.filterTitle}>Course Type</Text>
+              <View style={styles.badgeContainer}>
+                {courses.map((course) => (
+                  <TouchableOpacity key={course} onPress={() => setSelectedCourse(course)} style={[styles.badge, selectedCourse === course && styles.activeBadge]}>
+                    <Text style={selectedCourse === course ? styles.activeBadgeText : styles.badgeText}>{course}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.filterCard}>
+              <Text style={styles.filterTitle}>Price Range</Text>
+              {/* Slider component needs to be implemented or replaced */}
+              <View style={styles.priceRangeContainer}>
+                <Text style={styles.priceText}>R{priceRange[0]}</Text>
+                <Text style={styles.priceText}>to</Text>
+                <Text style={styles.priceText}>R{priceRange[1]}</Text>
+              </View>
+            </View>
+
+            <View style={styles.filterCard}>
+              <Text style={styles.filterTitle}>Exclude Allergens</Text>
+              <View style={styles.badgeContainer}>
+                {allergens.map((allergen) => (
+                  <TouchableOpacity key={allergen} onPress={() => toggleAllergen(allergen)} style={[styles.badge, selectedAllergens.includes(allergen) && styles.activeAllergenBadge]}>
+                    <Text style={selectedAllergens.includes(allergen) ? styles.activeBadgeText : styles.allergenBadgeText}>{allergen}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              {selectedAllergens.length > 0 && (
+                <Text style={styles.infoText}>Excluding items with: {selectedAllergens.join(', ')}</Text>
+              )}
+            </View>
+
+            <View>
+              <Text style={styles.resultsTitle}>Filtered Results ({filteredItems.length})</Text>
+            </View>
+          </View>
+        </>
+      }
+      ListEmptyComponent={
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No items match your filters</Text>
+          <TouchableOpacity onPress={clearFilters} style={styles.clearButtonAlt}>
+            <Text style={styles.clearButtonAltText}>Clear Filters</Text>
+          </TouchableOpacity>
         </View>
-      </View>
-    </ScrollView>
+      }
+    />
   );
 }
 
