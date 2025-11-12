@@ -49,11 +49,14 @@ export function SearchScreen({ menuItems, favorites, onViewDetails, onToggleFavo
   const styles = getStyles(colorScheme);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredItems = menuItems.filter(item =>
-    item.dishName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.course.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const query = searchQuery.trim().toLowerCase();
+  const filteredItems = query
+    ? menuItems.filter(item =>
+        item.dishName.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        item.course.toLowerCase().includes(query)
+      )
+    : [];
 
   const renderItem = ({ item }: { item: MenuItem }) => (
     <TouchableOpacity style={styles.card} onPress={() => onViewDetails(item)}>
@@ -86,7 +89,7 @@ export function SearchScreen({ menuItems, favorites, onViewDetails, onToggleFavo
   return (
     <FlatList
       style={styles.container}
-      data={filteredItems}
+  data={query ? filteredItems : []}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
       numColumns={2}
