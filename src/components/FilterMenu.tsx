@@ -29,10 +29,21 @@ export function FilterMenu({ menuItems, favorites, onBack, onViewDetails, onTogg
 
   const [selectedCourse, setSelectedCourse] = useState<string>('All');
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
+  // selectedPriceKey corresponds to a predefined range in priceOptions
+  const [selectedPriceKey, setSelectedPriceKey] = useState<string>('all');
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
 
   const courses = ['All', 'Starters', 'Mains', 'Dessert'];
   const allergens = ['Dairy', 'Eggs', 'Fish', 'Shellfish', 'Gluten', 'Nuts', 'Soy'];
+
+  // predefined price range options to help users filter within budgets
+  const priceOptions: { key: string; label: string; range: [number, number] }[] = [
+    { key: 'all', label: 'Any', range: [0, 100000] },
+    { key: 'under50', label: 'Under R50', range: [0, 50] },
+    { key: '50-100', label: 'R50 - R100', range: [50, 100] },
+    { key: '100-200', label: 'R100 - R200', range: [100, 200] },
+    { key: '200plus', label: 'R200+', range: [200, 100000] },
+  ];
 
   const toggleAllergen = (allergen: string) => {
     setSelectedAllergens(prev =>
@@ -45,12 +56,15 @@ export function FilterMenu({ menuItems, favorites, onBack, onViewDetails, onTogg
   const clearFilters = () => {
     setSelectedCourse('All');
     setPriceRange([0, 1000]);
+    setSelectedPriceKey('all');
     setSelectedAllergens([]);
   };
 
   const filteredItems = menuItems.filter(item => {
     const courseMatch = selectedCourse === 'All' || item.course === selectedCourse;
-    const priceMatch = item.price >= priceRange[0] && item.price <= priceRange[1];
+    // find price range based on selectedPriceKey
+    const selectedOption = priceOptions.find(p => p.key === selectedPriceKey) || priceOptions[0];
+    const priceMatch = item.price >= selectedOption.range[0] && item.price <= selectedOption.range[1];
     const allergenMatch = selectedAllergens.length === 0 ||
       !item.allergens.some(a => selectedAllergens.includes(a));
 
@@ -102,11 +116,19 @@ export function FilterMenu({ menuItems, favorites, onBack, onViewDetails, onTogg
 
             <View style={styles.filterCard}>
               <Text style={styles.filterTitle}>Price Range</Text>
-              {/* Slider component needs to be implemented or replaced */}
-              <View style={styles.priceRangeContainer}>
-                <Text style={styles.priceText}>R{priceRange[0]}</Text>
-                <Text style={styles.priceText}>to</Text>
-                <Text style={styles.priceText}>R{priceRange[1]}</Text>
+              <View style={styles.priceOptionsContainer}>
+                {priceOptions.map(opt => (
+                  <TouchableOpacity
+                    key={opt.key}
+                    onPress={() => setSelectedPriceKey(opt.key)}
+                    style={[styles.priceBadge, selectedPriceKey === opt.key && styles.activePriceBadge]}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Filter price ${opt.label}`}
+                  >
+                    <Text style={selectedPriceKey === opt.key ? styles.activePriceText : styles.priceText}>{opt.label}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
 
@@ -158,8 +180,13 @@ const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
   activeBadge: { backgroundColor: colors[colorScheme].primary },
   badgeText: { color: colors[colorScheme].primary },
   activeBadgeText: { color: colors.dark.text },
+  priceOptionsContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
+  priceBadge: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 16, borderWidth: 1, borderColor: colors[colorScheme].border, backgroundColor: colors[colorScheme].card },
+  activePriceBadge: { backgroundColor: colors[colorScheme].primary, borderColor: colors[colorScheme].primary },
+  priceText: { color: colors[colorScheme].text },
+  activePriceText: { color: colors.dark.text },
   priceRangeContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 },
-  priceText: { fontSize: 16, color: colors[colorScheme].text },
+  priceRangeText: { fontSize: 16, color: colors[colorScheme].text },
   activeAllergenBadge: { backgroundColor: '#b91c1c' },
   allergenBadgeText: { color: '#b91c1c' },
   infoText: { fontSize: 12, color: colors[colorScheme].text, marginTop: 8 },
