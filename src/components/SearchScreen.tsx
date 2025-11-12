@@ -50,8 +50,11 @@ export function SearchScreen({ menuItems, favorites, onViewDetails, onToggleFavo
   const [searchQuery, setSearchQuery] = useState('');
 
   const query = searchQuery.trim().toLowerCase();
-  const filteredItems = query
-    ? menuItems.filter(item =>
+  const MIN_QUERY_LENGTH = 2; // only start showing results after user types this many characters
+
+  const filteredItems = query.length >= MIN_QUERY_LENGTH
+    ? // prefer matches in dishName first, then fall back to description/course
+      menuItems.filter(item =>
         item.dishName.toLowerCase().includes(query) ||
         item.description.toLowerCase().includes(query) ||
         item.course.toLowerCase().includes(query)
@@ -89,7 +92,7 @@ export function SearchScreen({ menuItems, favorites, onViewDetails, onToggleFavo
   return (
     <FlatList
       style={styles.container}
-  data={query ? filteredItems : []}
+  data={query.length >= MIN_QUERY_LENGTH ? filteredItems : []}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
       numColumns={2}
