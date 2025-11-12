@@ -87,10 +87,10 @@ export function AddMenuItem({ onAdd, onCancel }: AddMenuItemProps) {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onCancel} style={styles.backButton}>
-          <Icon name="arrow-left" size={24} color={colors[colorScheme].text} />
-        </TouchableOpacity>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onCancel} style={styles.backButton} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
+            <Icon name="arrow-left" size={24} color={colors[colorScheme].text} />
+          </TouchableOpacity>
         <Icon name="coffee" size={28} color={colors[colorScheme].text} />
         <View>
           <Text style={styles.headerTitle}>Add Menu Item</Text>
@@ -137,7 +137,7 @@ export function AddMenuItem({ onAdd, onCancel }: AddMenuItemProps) {
             <Text style={styles.label}>Image URL</Text>
             <View style={styles.row}>
               <TextInput style={[styles.input, { flex: 1 }]} value={imageUrl} onChangeText={setImageUrl} placeholder="https://..." />
-              <TouchableOpacity style={styles.uploadButton}>
+              <TouchableOpacity style={styles.uploadButton} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityRole="button" accessibilityLabel="Upload image">
                 <Icon name="upload" size={20} color={colors[colorScheme].text} />
               </TouchableOpacity>
             </View>

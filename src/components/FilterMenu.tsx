@@ -74,7 +74,7 @@ export function FilterMenu({ menuItems, favorites, onBack, onViewDetails, onTogg
       ListHeaderComponent={
         <>
           <View style={styles.header}>
-            <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <TouchableOpacity onPress={onBack} style={styles.backButton} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityRole="button" accessibilityLabel="Back">
               <Icon name="arrow-left" size={24} color={colors[colorScheme].text} />
             </TouchableOpacity>
             <Icon name="sliders" size={28} color={colors[colorScheme].text} />
@@ -84,7 +84,7 @@ export function FilterMenu({ menuItems, favorites, onBack, onViewDetails, onTogg
             </View>
           </View>
 
-          <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
+          <TouchableOpacity style={styles.clearButton} onPress={clearFilters} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityRole="button" accessibilityLabel="Clear filters">
             <Text style={styles.clearButtonText}>Clear All Filters</Text>
           </TouchableOpacity>
 

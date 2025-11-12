@@ -19,6 +19,8 @@ export function BottomNavigation({ currentScreen, onNavigate, favoriteCount }: B
     { id: 'search', icon: 'search', label: 'Search' },
     { id: 'favorites', icon: 'heart', label: 'Favorites', count: favoriteCount },
     { id: 'settings', icon: 'settings', label: 'Settings' },
+    // explicit filter button at the end so it's visible with the other tabs
+    { id: 'filter', icon: 'sliders', label: 'Filter' },
   ];
 
   return (
@@ -26,7 +28,15 @@ export function BottomNavigation({ currentScreen, onNavigate, favoriteCount }: B
       {navItems.map((item) => {
         const isActive = currentScreen === item.id;
         return (
-          <TouchableOpacity key={item.id} style={styles.navItem} onPress={() => onNavigate(item.id)}>
+          <TouchableOpacity
+            key={item.id}
+            style={styles.navItem}
+            onPress={() => onNavigate(item.id)}
+            // make taps easier on smaller devices
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+            accessibilityLabel={item.label}
+          >
             <Icon name={item.icon} size={24} color={isActive ? colors[colorScheme].primary : colors[colorScheme].text} />
             <Text style={[styles.label, isActive && styles.activeLabel]}>{item.label}</Text>
             {item.count !== undefined && item.count > 0 && (

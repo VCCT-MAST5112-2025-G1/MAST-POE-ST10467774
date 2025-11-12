@@ -97,7 +97,7 @@ export function HomeScreen({ menuItems, favorites, onAddNew, onViewDetails, onTo
                 <Text style={styles.headerSubtitle}>Private Dining Experiences</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={onFilter}>
+            <TouchableOpacity onPress={onFilter} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} style={styles.headerAction} accessibilityRole="button" accessibilityLabel="Open filters">
               <Icon name="sliders" size={20} color={colors[colorScheme].text} />
             </TouchableOpacity>
           </View>
@@ -122,7 +122,7 @@ export function HomeScreen({ menuItems, favorites, onAddNew, onViewDetails, onTo
                 <Text style={styles.menuTitle}>Featured Menu</Text>
                 <Text style={styles.menuSubtitle}>Curated dining experiences</Text>
               </View>
-              <TouchableOpacity style={styles.addButton} onPress={onAddNew}>
+              <TouchableOpacity style={styles.addButton} onPress={onAddNew} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityRole="button" accessibilityLabel="Add menu item">
                 <Icon name="plus" size={16} color={colors.dark.text} />
                 <Text style={styles.addButtonText}>Add</Text>
               </TouchableOpacity>
@@ -135,10 +135,10 @@ export function HomeScreen({ menuItems, favorites, onAddNew, onViewDetails, onTo
           <Icon name="coffee" size={64} color={colors[colorScheme].primary} />
           <Text style={styles.emptyText}>No menu items yet</Text>
           <Text style={styles.emptySubtitle}>Start building your menu by adding items</Text>
-          <TouchableOpacity style={styles.addButton} onPress={onAddNew}>
-            <Icon name="plus" size={16} color={colors.dark.text} />
-            <Text style={styles.addButtonText}>Add Menu Item</Text>
-          </TouchableOpacity>
+          <TouchableOpacity style={styles.addButton} onPress={onAddNew} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} accessibilityRole="button" accessibilityLabel="Add menu item">
+              <Icon name="plus" size={16} color={colors.dark.text} />
+              <Text style={styles.addButtonText}>Add Menu Item</Text>
+            </TouchableOpacity>
         </View>
       }
     />
@@ -162,6 +162,10 @@ const getStyles = (colorScheme: 'light' | 'dark') => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  headerAction: {
+    padding: 8,
+    borderRadius: 8,
   },
   headerTitle: {
     fontSize: 24,
