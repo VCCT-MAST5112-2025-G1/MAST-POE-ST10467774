@@ -1,6 +1,6 @@
 # MAST-POE
 ## Part 2: Mobile App Implementation – Chef Christoffel’s Digital Menu
-
+Github link: 
 ### 🍽️ App Overview
 App Name: Chef Christoffel’s Digital Menu
 Framework: React Native
@@ -538,6 +538,86 @@ This repo uses TypeScript and depends on packages listed in `package.json` (Reac
 ![WhatsApp Image 2025-11-13 at 18 35 14_621e6eda](https://github.com/user-attachments/assets/2e9d93da-cb5e-4804-8f72-07a17c774a23)
 
 ### Changelog November 2025
+## Version 2.0.1 (2025-11-12) - UI / Navigation / Accessibility Updates
+### Summary
+Small-to-medium updates to navigation, UX, accessibility, and seed data performed on Nov 12, 2025. These changes improve navigation (Add screen separated into a stack), expose the Filter screen in the bottom tab bar, increase touch targets and accessibility labels across important buttons, refine search UX, add price-range choices in the filter UI, and refresh the sample dishes list.
+### Changed
+- Migrated app navigation to a combined Stack + Bottom Tabs pattern so the Add flow is a separate stack screen (keeps tabs visible while enabling push/pop flows).
+- Added a dedicated Filter tab to the bottom tab navigator so users can open filtering from the main navigation.
+- Improved button touch targets and accessibility across multiple components (hitSlop, accessibilityLabel, clearer visual buttons).
+- Search behavior: results are only shown after the user types at least 2 characters to avoid showing overly broad results on single-letter input.
+- Filter menu: added predefined price-range choices (quick-tap badges) to help users narrow results by budget.
+- Seed data: added several more sample dishes to the initial `menuItems` array so the Home screen is populated for testing.
+### Fixed / Cleaned
+- Removed a legacy function call and stray helper (`setCurrentScreen`) found during edits.
+- Applied a minimal typing/workaround in navigator instantiation to satisfy this project's TypeScript environment (`id={undefined}` on navigators) — this is an environment-specific workaround and can be replaced with proper typed param lists later.
+- Resolved style key/name collisions in `FilterMenu` and adjusted styles to avoid duplication.
+### Added
+- Price-range choice UI inside `src/components/FilterMenu.tsx` (predefined ranges simplified for quick selection).
+- Accessibility and hitSlop improvements in: `src/components/HomeScreen.tsx`, `src/components/AddMenuItems.tsx`, `src/components/FilterMenu.tsx`, `src/components/BottomNavigation.tsx`.
+### Files changed in this session
+- `App.tsx` — migrated to React Navigation (Stack + Bottom Tabs), added MainTabs, moved Add into stack, updated menu seed data, removed legacy helper call, re-added Cape Malay Bobotie (was briefly removed then restored during edits).
+- `src/components/BottomNavigation.tsx` — added Filter tab item and increased hit targets / accessibility.
+- `src/components/HomeScreen.tsx` — header and action buttons made more touchable/visible; improved add/filter button touch targets.
+- `src/components/AddMenuItems.tsx` — hitSlop and accessibility labels added for back/upload controls.
+- `src/components/FilterMenu.tsx` — added price options UI, selected price state, and filtering logic; improved touch targets.
+- `src/components/SearchScreen.tsx` — only shows results after a minimum input length (2 characters).
+- `README.md` — new or updated onboarding / run instructions added.
+### Notes & Next steps
+- Please run the app locally (Expo) and validate the new navigation and touch targets on an actual device or Expo Go. The dev server can be started via `npx expo start`.
+- Consider replacing the navigator typing workaround with properly-typed param lists (recommended for long-term maintenance).
+- If the external Bobotie image URL still causes rendering issues, replace it with a base64 placeholder or a different hosted image — I can update that for you.
+### Verification
+- Quick workspace search was performed to assert the presence of edited symbols (e.g., "Cape Malay Bobotie" exists in `App.tsx`).
+
+35. **React Native Directory**  
+    React Native Directory  
+    https://reactnative.directory/  
+    Accessed: October 2025
+    
+### Academic & Tutorial Resources
+36. **freeCodeCamp - React Native Tutorial**  
+    React Native Tutorial for Beginners  
+    https://www.freecodecamp.org/news/react-native-tutorial/  
+    Accessed: October 2025
+
+37. **Microsoft Learn - React Native**  
+    Introduction to React Native - Learn | Microsoft Docs  
+    https://learn.microsoft.com/en-us/training/modules/react-native-introduction/  
+    Accessed: October 2025
+
+### Image & Asset Resources
+38. **React Native Image Component**  
+    Image · React Native  
+    https://reactnative.dev/docs/image  
+    Accessed: October 2025
+
+39. **SVG Support in React Native**  
+    react-native-svg  
+    https://github.com/software-mansion/react-native-svg  
+    Accessed: October 2025
+
+### License Information
+40. **React Native License**  
+    React Native is MIT licensed  
+    https://github.com/facebook/react-native/blob/main/LICENSE  
+    Accessed: October 2025
+
+## Attribution
+This project uses open-source software licensed under various licenses including MIT, Apache 2.0, and BSD. All third-party libraries and dependencies are used in accordance with their respective licenses.
+
+### Key Contributors
+- **Facebook/Meta Open Source** - React Native core framework
+- **Expo Team** - Expo development platform and tools
+- **React Navigation Team** - Navigation library
+- **React Native Community** - Community-maintained packages and tools
+
+### Development Team
+- **Student ID:** ST10467774
+- **Project:** MAST POE - Chef Christoffel's Menu Management App
+- **Institution:** [Your Institution Name]
+- **Course:** Mobile Application Software Technology
+- **Year:** 2025
 
 
 
