@@ -618,6 +618,43 @@ This project uses open-source software licensed under various licenses including
 - **Course:** Mobile Application Software Technology
 - **Year:** 2025
 
+### Reference list:
+* React Native (2025) Getting Started – React Native Documentation. Available at: https://reactnative.dev/docs/getting-started
+ (Accessed: 11 November 2025).
+* React Native (2025) React Native Components and APIs. Available at: https://reactnative.dev/docs/components-and-apis
+ (Accessed: 11 November 2025).
+* React Native (2025) Accessibility Guide. Available at: https://reactnative.dev/docs/accessibility
+ (Accessed: 10 November 2025).
+* React Native (2025) Performance Guide. Available at: https://reactnative.dev/docs/performance
+ (Accessed: 10 November 2025).
+* React Native (2025) StyleSheet Documentation. Available at: https://reactnative.dev/docs/stylesheet
+ (Accessed: 10 November 2025).
+* React Native (2025) Animated API Documentation. Available at: https://reactnative.dev/docs/animated
+ (Accessed: 9 November 2025).
+* React (2025) React Documentation. Available at: https://react.dev/
+ (Accessed: 11 November 2025).
+* TypeScript (2025) TypeScript Handbook. Available at: https://www.typescriptlang.org/docs/
+ (Accessed: 11 November 2025).
+* MDN Web Docs (2025) JavaScript Reference – Language Documentation. Mozilla Foundation. Available at: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+ (Accessed: 12 November 2025).
+* Expo (2025) Expo Documentation – Running Apps with Expo Go. Available at: https://docs.expo.dev/
+ (Accessed: 12 November 2025).
+* React Navigation (2025) Getting Started – Navigation Documentation. Available at: https://reactnavigation.org/docs/getting-started
+ (Accessed: 11 November 2025).
+* react-native-vector-icons (2025) React Native Vector Icons Documentation. Available at: https://github.com/oblador/react-native-vector-icons
+ (Accessed: 10 November 2025).
+* @react-native-picker/picker (2025) React Native Picker Documentation. Available at: https://github.com/react-native-picker/picker
+ (Accessed: 12 November 2025).
+* @react-native-community/slider (2025) React Native Slider Documentation. Available at: https://github.com/callstack/react-native-slider
+ (Accessed: 11 November 2025).
+* React Native Testing Library (2025) Testing Documentation. Callstack. Available at: https://callstack.github.io/react-native-testing-library/
+ (Accessed: 10 November 2025).
+* typescript-eslint (2025) TypeScript + ESLint Guidance. Available at: https://typescript-eslint.io/
+ (Accessed: 10 November 2025).
+* React Native Community (2025) Upgrade Helper and Migration Guide. Available at: https://react-native-community.github.io/upgrade-helper/
+ (Accessed: 10 November 2025).
+* OpenAI (ChatGPT) (2025) Assistance with App Structure, Documentation and Code Implementation. OpenAI. Available at: https://chat.openai.com/
+ (Accessed: 10 November 2025).
 
 
 
@@ -722,49 +759,5 @@ If you amend or rewrite commits that have already been pushed, use `git push --f
 2. Run `npm install` and make your changes.
 3. Ensure TypeScript compiles: `npx tsc --noEmit`.
 4. Open a Pull Request describing the change.
-
-### Reference list:
-* React Native (2025) Getting Started – React Native Documentation. Available at: https://reactnative.dev/docs/getting-started
- (Accessed: 11 November 2025).
-* React Native (2025) React Native Components and APIs. Available at: https://reactnative.dev/docs/components-and-apis
- (Accessed: 11 November 2025).
-* React Native (2025) Accessibility Guide. Available at: https://reactnative.dev/docs/accessibility
- (Accessed: 10 November 2025).
-* React Native (2025) Performance Guide. Available at: https://reactnative.dev/docs/performance
- (Accessed: 10 November 2025).
-* React Native (2025) StyleSheet Documentation. Available at: https://reactnative.dev/docs/stylesheet
- (Accessed: 10 November 2025).
-* React Native (2025) Animated API Documentation. Available at: https://reactnative.dev/docs/animated
- (Accessed: 9 November 2025).
-* React (2025) React Documentation. Available at: https://react.dev/
- (Accessed: 11 November 2025).
-* TypeScript (2025) TypeScript Handbook. Available at: https://www.typescriptlang.org/docs/
- (Accessed: 11 November 2025).
-* MDN Web Docs (2025) JavaScript Reference – Language Documentation. Mozilla Foundation. Available at: https://developer.mozilla.org/en-US/docs/Web/JavaScript
- (Accessed: 12 November 2025).
-* Expo (2025) Expo Documentation – Running Apps with Expo Go. Available at: https://docs.expo.dev/
- (Accessed: 12 November 2025).
-* React Navigation (2025) Getting Started – Navigation Documentation. Available at: https://reactnavigation.org/docs/getting-started
- (Accessed: 11 November 2025).
-* react-native-vector-icons (2025) React Native Vector Icons Documentation. Available at: https://github.com/oblador/react-native-vector-icons
- (Accessed: 10 November 2025).
-* @react-native-picker/picker (2025) React Native Picker Documentation. Available at: https://github.com/react-native-picker/picker
- (Accessed: 12 November 2025).
-* @react-native-community/slider (2025) React Native Slider Documentation. Available at: https://github.com/callstack/react-native-slider
- (Accessed: 11 November 2025).
-* React Native Testing Library (2025) Testing Documentation. Callstack. Available at: https://callstack.github.io/react-native-testing-library/
- (Accessed: 10 November 2025).
-* typescript-eslint (2025) TypeScript + ESLint Guidance. Available at: https://typescript-eslint.io/
- (Accessed: 10 November 2025).
-* React Native Community (2025) Upgrade Helper and Migration Guide. Available at: https://react-native-community.github.io/upgrade-helper/
- (Accessed: 10 November 2025).
-* OpenAI (ChatGPT) (2025) Assistance with App Structure, Documentation and Code Implementation. OpenAI. Available at: https://chat.openai.com/
- (Accessed: 10 November 2025).
-
-
-
-
-
-
 
 
