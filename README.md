@@ -511,36 +511,37 @@ If updating from v1.x:
  (Accessed: 9 September 2025).
 * The Independent Institute of Education (2025) Mobile App Scripting Module Guide, The IIE.
 
-  ## Part 3: Final Implementation - Christoffel's Digital Menu
-  GitHub Link: 
+ ## Part 3: Final Implementation - Christoffel's Digital Menu
+GitHub Link: 
 
 React Native (Expo) app written in TypeScript. This project is a small menu management / private dining demo app (Chef Christoffel) with screens for Home, Search, Favorites, Settings, Add Menu Item and Filter. Navigation uses React Navigation (bottom tabs + stack). The project is configured for Expo and TypeScript. The focus was more on adding more dishes, updating the SearchScreen and error handeling.
 
-## Table of contents
-- Project status
-- Prerequisites
-- Setup
-- Run (dev)
-- Build (platforms)
-- Project structure
-- Key components
-- Navigation notes
-- Scripts & checks
-- Commit & PR guidance
-- Troubleshooting
-- Contributing
-  
-
-## Project status
+### Project status
 Work in progress. The app uses React Navigation (bottom tabs + stack) and Expo. The Add flow is presented as a separate stack screen and Filter is available both as a tab and via the Home header.
 
-## Prerequisites
+### Prerequisites
 - Node.js (LTS recommended)
 - npm or yarn
 - Expo CLI (optional, `npm install -g expo-cli` or use `npx expo`)
 - Android Studio or Xcode if you want to run on simulators/emulators
 - (Optional) Git and GitHub access for pushing the repo
 This repo uses TypeScript and depends on packages listed in `package.json` (React Native, Expo, react-navigation, etc.).
+
+### Screenshots
+![WhatsApp Image 2025-11-13 at 18 35 11_c214d2ce](https://github.com/user-attachments/assets/2f44dd56-7a97-47bc-aa16-4ab0aee06b89)
+![WhatsApp Image 2025-11-13 at 18 35 11_f5cd5b01](https://github.com/user-attachments/assets/1b064456-38a3-46e4-85bb-144d4d481b5a)
+![WhatsApp Image 2025-11-13 at 18 35 12_d1861239](https://github.com/user-attachments/assets/1ad579bf-e5ed-4c19-8402-e00eae833a5b)
+![WhatsApp Image 2025-11-13 at 18 35 12_94b666b1](https://github.com/user-attachments/assets/a144dc6f-aef2-42d5-ae63-3d6cf0bab26e)
+![WhatsApp Image 2025-11-13 at 18 35 13_17e22456](https://github.com/user-attachments/assets/3f7e5e70-3f6e-4ff6-8b1b-d7a6ce836835)
+![WhatsApp Image 2025-11-13 at 18 35 13_1d0bf45f](https://github.com/user-attachments/assets/da876eb8-7ced-4de8-bbbb-3cadd80b2e8e)
+![WhatsApp Image 2025-11-13 at 18 35 13_00b1dfea](https://github.com/user-attachments/assets/1c1c7726-46c9-4bc6-a097-819021d22f22)
+![WhatsApp Image 2025-11-13 at 18 35 14_621e6eda](https://github.com/user-attachments/assets/2e9d93da-cb5e-4804-8f72-07a17c774a23)
+
+### Changelog November 2025
+
+
+
+
 
 ## Setup
 * Clone the repository (if not already cloned):
@@ -643,7 +644,8 @@ If you amend or rewrite commits that have already been pushed, use `git push --f
 3. Ensure TypeScript compiles: `npx tsc --noEmit`.
 4. Open a Pull Request describing the change.
 
-### Screenshots
+
+
 
 
 
